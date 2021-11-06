@@ -2,6 +2,7 @@ import React from "react";
 import Head from "next/head";
 import Calendar from "src/components/calendar";
 import Header from "src/components/Header";
+import List from "src/components/List";
 
 const Home = () => {
   return (
@@ -14,19 +15,8 @@ const Home = () => {
 
       <Header />
 
-      <div className="flex w-full">
+      <div className="flex w-full h-[700px]">
         <Calendar />
-
-        <div className="w-1/3 border-2 mt-16 ">
-          <ul className="w-full h-7 flex border-b justify-between bg-gray-200 font-bold text-center">
-            <li className="w-1/2 border-r-2 hover:bg-blue-200 hover:opacity-80">
-              確認
-            </li>
-            <li className="w-1/2">追加</li>
-            <li></li>
-          </ul>
-          <button>button</button>
-        </div>
       </div>
     </div>
   );
