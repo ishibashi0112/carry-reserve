@@ -2,9 +2,14 @@ import React from "react";
 import Head from "next/head";
 import Calendar from "src/components/calendar";
 import Header from "src/components/Header";
-import List from "src/components/List";
+import { GoogleMap, LoadScript } from "@react-google-maps/api";
 
 const Home = () => {
+  const center = {
+    lat: 36.0492726,
+    lng: 139.8128241,
+  };
+
   return (
     <div className="h-screen w-full">
       <Head>
@@ -17,6 +22,15 @@ const Home = () => {
 
       <div className="flex w-full h-[700px]">
         <Calendar />
+      </div>
+      <div className="h-[500px">
+        <LoadScript googleMapsApiKey="AIzaSyAwujWmsRf6I3YArAfkIkpVJpD2NFqdGJo">
+          <GoogleMap
+            mapContainerStyle={{ width: "400px", height: "400px" }}
+            center={center}
+            zoom={10}
+          ></GoogleMap>
+        </LoadScript>
       </div>
     </div>
   );
