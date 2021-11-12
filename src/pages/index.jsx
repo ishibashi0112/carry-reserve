@@ -23,7 +23,8 @@ const Home = () => {
       <div className="flex w-full h-[700px]">
         <Calendar />
       </div>
-      <div className="h-[500px">
+      <h1>ルート</h1>
+      <div className="">
         <LoadScript googleMapsApiKey="AIzaSyAwujWmsRf6I3YArAfkIkpVJpD2NFqdGJo">
           <GoogleMap
             mapContainerStyle={{ width: "400px", height: "400px" }}
