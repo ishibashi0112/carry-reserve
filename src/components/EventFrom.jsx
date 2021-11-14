@@ -1,5 +1,4 @@
 import { addDoc, collection, deleteDoc, doc } from "@firebase/firestore";
-import { off } from "process";
 import React, { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { db } from "src/firebase/firebase";
@@ -17,8 +16,8 @@ const EventForm = () => {
       date: data.date,
       time_zone: data.time_zone,
       zipcode: data.zipcode,
-      aderess1: data.aderess1,
-      aderess2: data.aderess2,
+      address1: data.address1,
+      address2: data.address2,
       phone_number: data.phone_number,
       key_person: data.key_person,
       items: data.items,
@@ -104,7 +103,7 @@ const EventForm = () => {
           <input
             type="text"
             className="w-full block border-b outline-none text-lg hover:border-b-2 caret-blue-300 delay-100 hover:border-gray-500 focus:border-b-2 focus:border-blue-300"
-            {...register("aderess1", { required: true })}
+            {...register("address1", { required: true })}
           />
         </label>
 
@@ -113,7 +112,7 @@ const EventForm = () => {
           <input
             type="text"
             className="w-full block border-b outline-none text-lg hover:border-b-2 caret-blue-300 delay-100 hover:border-gray-500 focus:border-b-2 focus:border-blue-300"
-            {...register("aderess2", {})}
+            {...register("address2", {})}
           />
         </label>
 
