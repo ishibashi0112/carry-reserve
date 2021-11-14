@@ -23,10 +23,22 @@ const Calendar = () => {
 
   const handleClickEvent = useCallback(
     (e) => {
+      console.log(e);
       const selectEvent = {
         id: e.event.id,
-        title: e.event.title,
-        date: e.event.start,
+        destination: e.event.extendedProps.destination,
+        date: e.event.extendedProps.date,
+        time_zone: e.event.extendedProps.time_zone,
+        zipcode: e.event.extendedProps.zipcode,
+        address1: e.event.extendedProps.address1,
+        address2: e.event.extendedProps.address2,
+        phone_number: e.event.extendedProps.phone_number,
+        key_person: e.event.extendedProps.key_person,
+        phone_number: e.event.extendedProps.phone_number,
+        items: e.event.extendedProps.items,
+        description: e.event.extendedProps.description,
+        isConfirm: e.event.extendedProps.isConfirm,
+        user_id: e.event.extendedProps.user_id,
       };
       console.log(selectEvent);
       setSelectEvent(selectEvent);
@@ -42,6 +54,20 @@ const Calendar = () => {
         id: doc.id,
         title: doc.data().destination,
         date: doc.data().date,
+        extendedProps: {
+          destination: doc.data().destination,
+          time_zone: doc.data().time_zone,
+          zipcode: doc.data().zipcode,
+          address1: doc.data().address1,
+          address2: doc.data().address2,
+          phone_number: doc.data().phone_number,
+          key_person: doc.data().key_person,
+          phone_number: doc.data().phone_number,
+          items: doc.data().items,
+          description: doc.data().description,
+          isConfirm: doc.data().isConfirm,
+          user_id: doc.data().user_id,
+        },
       }));
       console.log(AllEvent);
       setEvents(AllEvent);
@@ -55,9 +81,22 @@ const Calendar = () => {
     onSnapshot(res, async (querySnapshot) => {
       const resArray = querySnapshot.docs;
       const AllEvent = await resArray.map((doc) => ({
-        id: doc.id,
         title: doc.data().destination,
         date: doc.data().date,
+        extendedProps: {
+          destination: doc.data().destination,
+          time_zone: doc.data().time_zone,
+          zipcode: doc.data().zipcode,
+          address1: doc.data().address1,
+          address2: doc.data().adrress2,
+          phone_number: doc.data().phone_number,
+          key_person: doc.data().key_person,
+          phone_number: doc.data().phone_number,
+          items: doc.data().items,
+          description: doc.data().description,
+          isConfirm: doc.data().isConfirm,
+          user_id: doc.data().user_id,
+        },
       }));
       setEvents(AllEvent);
     });

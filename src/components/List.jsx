@@ -2,6 +2,7 @@ import { deleteDoc, doc } from "@firebase/firestore";
 import React, { useCallback, useEffect, useState } from "react";
 import EventForm from "src/components/EventFrom";
 import { db } from "src/firebase/firebase";
+import Map from "src/components/Map";
 
 const List = (props) => {
   const [view, setView] = useState("確認");
@@ -9,28 +10,57 @@ const List = (props) => {
 
   const handleClick = useCallback((e) => {
     const buttonText = e.target.innerHTML;
-    if (buttonText === "確認") {
-      setView("確認");
-      return;
+
+    switch (buttonText) {
+      case "確認":
+        setView("確認");
+        break;
+      case "地図":
+        setView("地図");
+        break;
+      case "追加":
+        setView("追加");
+        break;
     }
-    setView("追加");
   }, []);
 
   const handleClickDelete = async () => {
     await deleteDoc(doc(db, "events", eventId));
   };
 
+  useEffect(() => {
+    console.log(props);
+  });
+
   return (
     <div className="w-full h-full border-2 border-gray-500  mt-16 ">
-      <div className="w-full h-7 bg-gray-300 flex border-b-2 border-gray-500  justify-between  text-center">
+      <div className="w-full h-7 bg-gray-300 flex  justify-between  text-center ">
         <button
-          className="w-1/2 border-r-2 border-gray-500 font-bold  hover:bg-gray-50 hover:opacity-60 focus:bg-blue-200"
+          className={
+            view === "確認"
+              ? "w-1/3 bg-white  font-bold underline   "
+              : "w-1/3 border-gray-500 font-bold text-gray-500  hover:bg-gray-50 hover:opacity-80 active:opacity-40 "
+          }
           onClick={handleClick}
         >
           確認
         </button>
         <button
-          className="w-1/2 font-bold hover:bg-gray-100  hover:opacity-60 focus:bg-blue-200"
+          className={
+            view === "地図"
+              ? "w-1/3 bg-white  font-bold underline "
+              : "w-1/3 border-gray-500 font-bold text-gray-500  hover:bg-gray-50 hover:opacity-80 active:opacity-40"
+          }
+          onClick={handleClick}
+        >
+          地図
+        </button>
+        <button
+          className={
+            view === "追加"
+              ? "w-1/3 bg-white  font-bold underline "
+              : "w-1/3 border-gray-500 font-bold text-gray-500  hover:bg-gray-50 hover:opacity-80 active:opacity-40 "
+          }
           onClick={handleClick}
         >
           追加
@@ -39,15 +69,85 @@ const List = (props) => {
       {view === "確認" ? (
         <div>
           {props.selectEvent ? (
-            <div>
-              <p>{props.selectEvent.title}</p>
-              <p>{props.selectEvent.id}</p>
-              <button className="block" onClick={handleClickDelete}>
+            <div className="w-4/5 mx-auto m-3 flex flex-col gap-2">
+              <div>
+                <p className=" block text-xs ">行き先</p>
+                <p className="w-full block border-b outline-none text-lg">
+                  {props.selectEvent.destination}
+                </p>
+              </div>
+
+              <div>
+                <p className=" block text-xs ">日時</p>
+                <p className="w-full block border-b outline-none text-lg">
+                  {props.selectEvent.date}
+                </p>
+              </div>
+
+              <div>
+                <p className=" block text-xs ">時間帯</p>
+                <p className="w-full block border-b outline-none text-lg">
+                  {props.selectEvent.time_zone}
+                </p>
+              </div>
+
+              <div>
+                <p className=" block text-xs ">郵便番号</p>
+                <p className="w-full block border-b outline-none text-lg">
+                  {props.selectEvent.zipcode}
+                </p>
+              </div>
+
+              <div>
+                <p className=" block text-xs ">住所</p>
+                <p className="w-full block border-b outline-none text-lg">
+                  {props.selectEvent.adress1}
+                  {props.selectEvent.adress2}
+                </p>
+              </div>
+
+              <div>
+                <p className=" block text-xs ">電話番号</p>
+                <p className="w-full block border-b outline-none text-lg">
+                  {props.selectEvent.phone_number}
+                </p>
+              </div>
+
+              <div>
+                <p className=" block text-xs ">担当者</p>
+                <p className="w-full block border-b outline-none text-lg">
+                  {props.selectEvent.key_person}
+                </p>
+              </div>
+
+              <div>
+                <p className=" block text-xs ">品目情報</p>
+                <p className="w-full block border-b outline-none text-lg">
+                  {props.selectEvent.items}
+                </p>
+              </div>
+
+              <div>
+                <p className=" block text-xs ">備考（特記事項等）</p>
+                <p className="w-full block border-b outline-none text-lg">
+                  {props.selectEvent.description}
+                </p>
+              </div>
+
+              {/* <p>{props.selectEvent.isConfirm}</p>
+              <p>{props.selectEvent.user_id}</p> */}
+
+              <button
+                className="block font-bold delay-100 bg-white border-2 rounded-md"
+                onClick={handleClickDelete}
+              >
                 削除
               </button>
             </div>
           ) : null}
         </div>
+      ) : view === "地図" ? (
+        <Map />
       ) : (
         <EventForm />
       )}
