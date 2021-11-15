@@ -8,7 +8,7 @@ const List = (props) => {
   const [view, setView] = useState("確認");
   const eventId = props.selectEvent ? props.selectEvent.id : null;
 
-  const handleClick = useCallback((e) => {
+  const handleClickTab = useCallback((e) => {
     const buttonText = e.target.innerHTML;
 
     switch (buttonText) {
@@ -39,9 +39,9 @@ const List = (props) => {
           className={
             view === "確認"
               ? "w-1/3 bg-white  font-bold underline   "
-              : "w-1/3 border-gray-500 font-bold text-gray-500  hover:bg-gray-50 hover:opacity-80 active:opacity-40 "
+              : "w-1/3 border-gray-500 font-bold text-gray-400  hover:bg-gray-50 hover:opacity-80 active:opacity-40 "
           }
-          onClick={handleClick}
+          onClick={handleClickTab}
         >
           確認
         </button>
@@ -49,9 +49,9 @@ const List = (props) => {
           className={
             view === "地図"
               ? "w-1/3 bg-white  font-bold underline "
-              : "w-1/3 border-gray-500 font-bold text-gray-500  hover:bg-gray-50 hover:opacity-80 active:opacity-40"
+              : "w-1/3 border-gray-500 font-bold text-gray-400  hover:bg-gray-50 hover:opacity-80 active:opacity-40"
           }
-          onClick={handleClick}
+          onClick={handleClickTab}
         >
           地図
         </button>
@@ -59,9 +59,9 @@ const List = (props) => {
           className={
             view === "追加"
               ? "w-1/3 bg-white  font-bold underline "
-              : "w-1/3 border-gray-500 font-bold text-gray-500  hover:bg-gray-50 hover:opacity-80 active:opacity-40 "
+              : "w-1/3 border-gray-500 font-bold text-gray-400  hover:bg-gray-50 hover:opacity-80 active:opacity-40 "
           }
-          onClick={handleClick}
+          onClick={handleClickTab}
         >
           追加
         </button>
@@ -101,8 +101,8 @@ const List = (props) => {
               <div>
                 <p className=" block text-xs ">住所</p>
                 <p className="w-full block border-b outline-none text-lg">
-                  {props.selectEvent.adress1}
-                  {props.selectEvent.adress2}
+                  {props.selectEvent.address1}
+                  {props.selectEvent.address2}
                 </p>
               </div>
 

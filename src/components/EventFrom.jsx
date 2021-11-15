@@ -112,7 +112,7 @@ const EventForm = () => {
           <input
             type="text"
             className="w-full block border-b outline-none text-lg hover:border-b-2 caret-blue-300 delay-100 hover:border-gray-500 focus:border-b-2 focus:border-blue-300"
-            {...register("address2", {})}
+            {...register("address2")}
           />
         </label>
 
