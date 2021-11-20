@@ -130,9 +130,6 @@ const List = (props) => {
                 </p>
               </div>
 
-              {/* <p>{props.selectEvent.isConfirm}</p>
-              <p>{props.selectEvent.user_id}</p> */}
-
               <button
                 className="block font-bold delay-100 bg-white border-2 rounded-md"
                 onClick={handleClickDelete}

@@ -1,5 +1,5 @@
-import { addDoc, collection, deleteDoc, doc } from "@firebase/firestore";
-import React, { useCallback, useEffect, useState } from "react";
+import { addDoc, collection } from "@firebase/firestore";
+import React, { useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { db } from "src/firebase/firebase";
 
@@ -24,7 +24,6 @@ const EventForm = () => {
       description: data.description,
       isConfirm: data.isConfirm,
       user_id: data.user_id,
-      // file: data.file,
     });
     console.log(eventData);
     reset();

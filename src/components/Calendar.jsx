@@ -7,27 +7,31 @@ import listPlugin from "@fullcalendar/list";
 import List from "src/components/List";
 import { collection, getDocs, onSnapshot } from "@firebase/firestore";
 import { db } from "src/firebase/firebase";
+import { useSharedState } from "src/hooks/useSharedState";
 
 const Calendar = () => {
   const [selectEvent, setSelectEvent] = useState({});
-  const [selectDate, setSelectDate] = useState("");
+  // const [selectDateEvents, setSelectDateEvents] = useState("");
   const [events, setEvents] = useState([]);
-
-  const handleClickDate = useCallback(
-    (data) => {
-      setSelectDate(data.dateStr);
-      console.log(selectDate);
-    },
-    [selectDate]
+  const [selectDateEvents, setSelectDateEvents] = useSharedState(
+    "dateEvents",
+    []
   );
+
+  const handleClickDate = (data) => {
+    const dateStr = data.dateStr;
+    const DateEvents = events.filter((event) => dateStr === event.date);
+    setSelectDateEvents(DateEvents);
+    console.log(selectDateEvents);
+  };
 
   const handleClickEvent = useCallback(
     (e) => {
-      console.log(e);
+      console.log();
       const selectEvent = {
         id: e.event.id,
         destination: e.event.extendedProps.destination,
-        date: e.event.extendedProps.date,
+        date: e.event.startStr,
         time_zone: e.event.extendedProps.time_zone,
         zipcode: e.event.extendedProps.zipcode,
         address1: e.event.extendedProps.address1,
@@ -81,6 +85,7 @@ const Calendar = () => {
     onSnapshot(res, async (querySnapshot) => {
       const resArray = querySnapshot.docs;
       const AllEvent = await resArray.map((doc) => ({
+        id: doc.id,
         title: doc.data().destination,
         date: doc.data().date,
         extendedProps: {
@@ -88,7 +93,7 @@ const Calendar = () => {
           time_zone: doc.data().time_zone,
           zipcode: doc.data().zipcode,
           address1: doc.data().address1,
-          address2: doc.data().adrress2,
+          address2: doc.data().address2,
           phone_number: doc.data().phone_number,
           key_person: doc.data().key_person,
           phone_number: doc.data().phone_number,
@@ -118,9 +123,11 @@ const Calendar = () => {
             listPlugin,
           ]}
           selectable={true}
+          unselectAuto={false}
           weekends={false}
+          dayMaxEvents={true}
           headerToolbar={{
-            left: "dayGridMonth,timeGridWeek,timeGridDay,listMonth",
+            left: "dayGridMonth,timeGridDay,listMonth",
             center: "title",
             right: "prev,next",
           }}
@@ -130,10 +137,11 @@ const Calendar = () => {
           events={events}
           dateClick={handleClickDate}
           eventClick={handleClickEvent}
+          // select={handleClickDate}
         />
       </div>
       <div className="w-1/3 h-full">
-        <List selectEvent={selectEvent} selectDate={selectDate} />
+        <List selectEvent={selectEvent} />
       </div>
     </div>
   );
