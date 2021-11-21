@@ -11,7 +11,6 @@ import { useSharedState } from "src/hooks/useSharedState";
 
 const Calendar = () => {
   const [selectEvent, setSelectEvent] = useState({});
-  // const [selectDateEvents, setSelectDateEvents] = useState("");
   const [events, setEvents] = useState([]);
   const [selectDateEvents, setSelectDateEvents] = useSharedState(
     "dateEvents",
@@ -137,7 +136,6 @@ const Calendar = () => {
           events={events}
           dateClick={handleClickDate}
           eventClick={handleClickEvent}
-          // select={handleClickDate}
         />
       </div>
       <div className="w-1/3 h-full">
