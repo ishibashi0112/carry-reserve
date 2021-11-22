@@ -29,7 +29,7 @@ const List = (props) => {
   };
 
   return (
-    <div className="w-full h-full border-2 border-gray-500  mt-16 ">
+    <div className="w-full h-full ">
       <div className="w-full h-7 bg-gray-200 flex  justify-between  text-center ">
         <button
           className={
