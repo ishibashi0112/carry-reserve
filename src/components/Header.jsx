@@ -32,30 +32,61 @@ const Header = () => {
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         const usersRef = collection(db, "users");
-        const q = query(usersRef, where("user_id", "==", user.uid));
-        const userDataArray = await getDocs(q);
-        let currentUserData;
-        userDataArray.forEach((userData) => {
-          console.log(userData.data());
-          currentUserData = userData.data();
+        const usersQuery = query(usersRef, where("user_id", "==", user.uid));
+        const userData = await getDocs(usersQuery);
+        const userDocs = userData.docs;
+        const currentUserData = userDocs.map((doc) => {
+          const data = doc.data();
+          return { ...data, id: doc.id };
         });
-        console.log(currentUserData);
 
-        const companiesRef = doc(db, "companies", currentUserData.company_id);
-        const companiesDoc = await getDoc(companiesRef);
-        console.log(companiesDoc.data());
-        const currentCompanyData = companiesDoc.data();
-
+        const companiesRef = doc(
+          db,
+          "companies",
+          currentUserData[0].company_id
+        );
+        const companyDoc = await getDoc(companiesRef);
+        const currentCompanyData = companyDoc.data();
         setCurrentUserCompanyData({
-          ...currentUserData,
+          ...currentUserData[0],
           ...currentCompanyData,
         });
+        console.log(currentUserCompanyData);
+      }
+    });
+  };
+
+  const [currentUserEventsData, setCurrentUserEventsData] = useState(null);
+
+  const getUserEvents = () => {
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        try {
+          const eventsRef = collection(db, "events");
+          const eventsQuery = query(
+            eventsRef,
+            where("user_id", "==", auth.currentUser.uid),
+            where("isConfirm", "==", false)
+          );
+          const eventsData = await getDocs(eventsQuery);
+          const eventsDocs = eventsData.docs;
+          const UserEventsData = eventsDocs.map((doc) => {
+            const data = doc.data();
+            return { ...data, id: doc.id };
+          });
+          console.log(UserEventsData);
+          setCurrentUserEventsData(UserEventsData);
+          console.log(currentUserEventsData);
+        } catch (error) {
+          alert(error);
+        }
       }
     });
   };
 
   useEffect(() => {
     getUserCompanyData();
+    getUserEvents();
   }, []);
 
   return (
@@ -134,9 +165,14 @@ const Header = () => {
 
               <ul className="hidden peer-checked:block">
                 <p>今後の予定</p>
-                <li></li>
-                <li></li>
-                <li></li>
+                {currentUserEventsData?.map((event) => {
+                  return (
+                    <li key={event.id}>
+                      <p className="inline">{event.date}</p>
+                      <p className="inline ml-1">{event.destination}</p>
+                    </li>
+                  );
+                })}
               </ul>
             </div>
             <hr />
