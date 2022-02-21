@@ -2,6 +2,7 @@ import React from "react";
 import Head from "next/head";
 import Calendar from "src/components/calendar";
 import Header from "src/components/Header";
+import List from "src/components/List";
 
 const Home = () => {
   return (
@@ -16,6 +17,7 @@ const Home = () => {
 
       <div className="flex w-full h-[700px]">
         <Calendar />
+        <List />
       </div>
     </div>
   );

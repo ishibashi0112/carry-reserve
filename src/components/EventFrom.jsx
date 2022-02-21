@@ -1,11 +1,11 @@
 import { addDoc, collection } from "@firebase/firestore";
 import React, { useCallback } from "react";
 import { useForm } from "react-hook-form";
-import { db } from "src/firebase/firebase";
+import { auth, db } from "src/firebase/firebase";
 
 const EventForm = () => {
   const { register, handleSubmit, reset } = useForm({
-    defaultValues: { isConfirm: false },
+    defaultValues: { isConfirm: false, user_id: auth.currentUser.uid },
     criteriaMode: "all",
   });
 
