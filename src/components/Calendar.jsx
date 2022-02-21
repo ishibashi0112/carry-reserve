@@ -1,32 +1,27 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect } from "react";
 import FullCalendar from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import listPlugin from "@fullcalendar/list";
-import List from "src/components/List";
 import { collection, getDocs, onSnapshot } from "@firebase/firestore";
 import { db } from "src/firebase/firebase";
-import { useSharedState } from "src/hooks/useSharedState";
+import { eventsState } from "src/stores/valtioState";
+import { useSnapshot } from "valtio";
 
 const Calendar = () => {
-  const [selectEvent, setSelectEvent] = useState({});
-  const [events, setEvents] = useState([]);
-  const [selectDateEvents, setSelectDateEvents] = useSharedState(
-    "dateEvents",
-    []
-  );
+  const eventsSnap = useSnapshot(eventsState);
 
   const handleClickDate = (data) => {
     const dateStr = data.dateStr;
-    const DateEvents = events.filter((event) => dateStr === event.date);
-    setSelectDateEvents(DateEvents);
-    console.log(selectDateEvents);
+    const DateEvents = eventsSnap.events.filter(
+      (event) => dateStr === event.date
+    );
+    eventsState.dateEvents = DateEvents;
   };
 
   const handleClickEvent = useCallback(
     (e) => {
-      console.log();
       const selectEvent = {
         id: e.event.id,
         destination: e.event.extendedProps.destination,
@@ -43,10 +38,11 @@ const Calendar = () => {
         isConfirm: e.event.extendedProps.isConfirm,
         user_id: e.event.extendedProps.user_id,
       };
-      console.log(selectEvent);
-      setSelectEvent(selectEvent);
+
+      eventsState.selectEvent = selectEvent;
+      console.log(eventsState.selectEvent);
     },
-    [events]
+    [eventsState.events]
   );
 
   const getEvents = useCallback(async () => {
@@ -72,8 +68,7 @@ const Calendar = () => {
           user_id: doc.data().user_id,
         },
       }));
-      console.log(AllEvent);
-      setEvents(AllEvent);
+      eventsState.events = AllEvent;
     } catch (error) {
       console.log(error);
     }
@@ -102,7 +97,7 @@ const Calendar = () => {
           user_id: doc.data().user_id,
         },
       }));
-      setEvents(AllEvent);
+      eventsState.events = AllEvent;
     });
   };
 
@@ -112,35 +107,27 @@ const Calendar = () => {
   }, []);
 
   return (
-    <div className="flex w-full h-full">
-      <div className=" w-2/3 ">
-        <FullCalendar
-          plugins={[
-            timeGridPlugin,
-            dayGridPlugin,
-            interactionPlugin,
-            listPlugin,
-          ]}
-          selectable={true}
-          unselectAuto={false}
-          weekends={false}
-          dayMaxEvents={true}
-          headerToolbar={{
-            left: "dayGridMonth,timeGridDay,listMonth",
-            center: "title",
-            right: "prev,next",
-          }}
-          slotMinTime={"07:00:00"}
-          slotMaxTime={"21:00:00"}
-          locale={"ja"}
-          events={events}
-          dateClick={handleClickDate}
-          eventClick={handleClickEvent}
-        />
-      </div>
-      <div className="w-1/3 h-full">
-        <List selectEvent={selectEvent} />
-      </div>
+    <div className="flex-1 p-6 mx-4 border-[0.5px] border-gray-500 ">
+      <FullCalendar
+        height={"100%"}
+        plugins={[timeGridPlugin, dayGridPlugin, interactionPlugin, listPlugin]}
+        initialView="dayGridMonth"
+        selectable={true}
+        unselectAuto={false}
+        weekends={false}
+        dayMaxEvents={true}
+        headerToolbar={{
+          left: "dayGridMonth,timeGridDay,listMonth",
+          center: "title",
+          right: "prev,next",
+        }}
+        slotMinTime={"07:00:00"}
+        slotMaxTime={"21:00:00"}
+        locale={"ja"}
+        events={eventsSnap.events}
+        dateClick={handleClickDate}
+        eventClick={handleClickEvent}
+      />
     </div>
   );
 };

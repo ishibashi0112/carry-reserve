@@ -3,10 +3,13 @@ import React, { useCallback, useState } from "react";
 import EventForm from "src/components/EventFrom";
 import { db } from "src/firebase/firebase";
 import Map from "src/components/Map";
+import { eventsState } from "src/stores/valtioState";
+import { useSnapshot } from "valtio";
 
-const List = (props) => {
+const List = () => {
+  const eventsSnap = useSnapshot(eventsState);
   const [view, setView] = useState("確認");
-  const eventId = props.selectEvent ? props.selectEvent.id : null;
+  const eventId = eventsSnap.selectEvent ? eventsSnap.selectEvent.id : null;
 
   const handleClickTab = useCallback((e) => {
     const buttonText = e.target.innerHTML;
@@ -24,12 +27,12 @@ const List = (props) => {
     }
   }, []);
 
-  const handleClickDelete = async () => {
+  const handleClickDelete = useCallback(async () => {
     await deleteDoc(doc(db, "events", eventId));
-  };
+  }, [eventId]);
 
   return (
-    <div className="w-full h-full ">
+    <div className="w-[400px] h-full border-[0.5px] border-gray-500 ">
       <div className="w-full h-7 bg-gray-200 flex  justify-between  text-center ">
         <button
           className={
@@ -64,69 +67,69 @@ const List = (props) => {
       </div>
       {view === "確認" ? (
         <div>
-          {props.selectEvent ? (
+          {eventsSnap.selectEvent ? (
             <div className="w-4/5 mx-auto m-3 flex flex-col gap-2">
               <div>
                 <p className=" block text-xs ">行き先</p>
                 <p className="w-full h-[28px] block border-b outline-none text-lg">
-                  {props.selectEvent.destination}
+                  {eventsSnap.selectEvent.destination}
                 </p>
               </div>
 
               <div>
                 <p className=" block text-xs ">日時</p>
                 <p className="w-full h-[28px] block border-b outline-none text-lg">
-                  {props.selectEvent.date}
+                  {eventsSnap.selectEvent.date}
                 </p>
               </div>
 
               <div>
                 <p className=" block text-xs ">時間帯</p>
                 <p className="w-full h-[28px] block border-b outline-none text-lg">
-                  {props.selectEvent.time_zone}
+                  {eventsSnap.selectEvent.time_zone}
                 </p>
               </div>
 
               <div>
                 <p className=" block text-xs ">郵便番号</p>
                 <p className="w-full h-[28px] block border-b outline-none text-lg">
-                  {props.selectEvent.zipcode}
+                  {eventsSnap.selectEvent.zipcode}
                 </p>
               </div>
 
               <div>
                 <p className=" block text-xs ">住所</p>
                 <p className="w-full h-[28px] block border-b outline-none text-lg">
-                  {props.selectEvent.address1}
-                  {props.selectEvent.address2}
+                  {eventsSnap.selectEvent.address1}
+                  {eventsSnap.selectEvent.address2}
                 </p>
               </div>
 
               <div>
                 <p className=" block text-xs ">電話番号</p>
                 <p className="w-full h-[28px] block border-b outline-none text-lg">
-                  {props.selectEvent.phone_number}
+                  {eventsSnap.selectEvent.phone_number}
                 </p>
               </div>
 
               <div>
                 <p className=" block text-xs ">担当者</p>
                 <p className="w-full h-[28px] block border-b outline-none text-lg">
-                  {props.selectEvent.key_person}
+                  {eventsSnap.selectEvent.key_person}
                 </p>
               </div>
 
               <div>
                 <p className=" block text-xs ">品目情報</p>
                 <p className="w-full h-[28px] block border-b outline-none text-lg">
-                  {props.selectEvent.items}
+                  {eventsSnap.selectEvent.items}
                 </p>
               </div>
 
               <div>
                 <p className=" block text-xs ">備考（特記事項等）</p>
                 <p className="w-full h-[28px] block border-b outline-none text-lg">
-                  {props.selectEvent.description}
+                  {eventsSnap.selectEvent.description}
                 </p>
               </div>
 
