@@ -23,4 +23,7 @@ module.exports = withTM({
     FIREBASE_APP_ID: "1:590633539456:web:f67230dea960840287d365",
     GOOGLE_MAPS_API_KEY: "AIzaSyAwujWmsRf6I3YArAfkIkpVJpD2NFqdGJo",
   },
+  images: {
+    domains: ["source.unsplash.com"],
+  },
 });
