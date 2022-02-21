@@ -1,6 +1,6 @@
 import React from "react";
 import Head from "next/head";
-import Calendar from "src/components/calendar";
+import Calendar from "src/components/Calendar";
 import Header from "src/components/Header";
 import List from "src/components/List";
 
