@@ -1,11 +1,12 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
-import { useSharedState } from "src/hooks/useSharedState";
 import Geocoder from "src/components/Geocoder";
+import Direction from "src/components/Direction";
+import { useSnapshot } from "valtio";
+import { eventsState } from "src/stores/valtioState";
 
 const Map = () => {
-  const [selectDateEvents] = useSharedState("dateEvents");
-  const [selectDateLatLng] = useSharedState("latLng");
+  const eventsSnap = useSnapshot(eventsState);
   const center = {
     lat: 36.0492726,
     lng: 139.8128241,
@@ -20,16 +21,21 @@ const Map = () => {
           zoom={10}
         >
           <Marker position={center} />
-          {selectDateLatLng?.map((latLng) => {
-            return <Marker key={latLng.lat} position={latLng} />;
-          })}
-          <Geocoder />
+
+          {eventsSnap.dateEvents.length ? (
+            <div>
+              <Geocoder />
+
+              <Direction />
+            </div>
+          ) : null}
         </GoogleMap>
       </LoadScript>
+
       <div>
         <p>ルート情報</p>
         <div>
-          {selectDateEvents?.map((event) => (
+          {eventsSnap.dateEvents?.map((event) => (
             <p key={event.id}>{event.extendedProps.destination}</p>
           ))}
         </div>
