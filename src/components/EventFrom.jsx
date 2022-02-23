@@ -5,7 +5,11 @@ import { auth, db } from "src/firebase/firebase";
 
 const EventForm = () => {
   const { register, handleSubmit, reset } = useForm({
-    defaultValues: { isConfirm: false, user_id: auth.currentUser.uid },
+    defaultValues: {
+      isDone: false,
+      isConfirm: false,
+      user_id: auth.currentUser.uid,
+    },
     criteriaMode: "all",
   });
 
@@ -23,6 +27,7 @@ const EventForm = () => {
       items: data.items,
       description: data.description,
       isConfirm: data.isConfirm,
+      isDone: data.isDone,
       user_id: data.user_id,
     });
     console.log(eventData);
@@ -158,6 +163,7 @@ const EventForm = () => {
         </label>
 
         <input type="hidden" {...register("isConfirm")} />
+        <input type="hidden" {...register("isDone")} />
         <input type="hidden" {...register("user_id")} />
         <input
           type="submit"
