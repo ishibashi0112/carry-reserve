@@ -1,16 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useSnapshot } from "valtio";
 import { eventsState, mapState } from "src/stores/valtioState";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-import { collection, getDocs, query, where } from "firebase/firestore";
-import { db } from "src/firebase/firebase";
 
 const DndZone = () => {
   const eventsSnap = useSnapshot(eventsState);
   const [eventsArray, setEventsArray] = useState(eventsSnap.dateEvents);
-  const [switching, setSwitching] = useState("ルートを確定する");
-
-  console.log(eventsArray);
 
   const handleOnDragEnd = (results) => {
     const prevArray = eventsArray;

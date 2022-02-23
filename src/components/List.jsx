@@ -10,7 +10,7 @@ const List = () => {
   const eventsSnap = useSnapshot(eventsState);
   const [view, setView] = useState("確認");
   const eventId = eventsSnap.selectEvent ? eventsSnap.selectEvent.id : null;
-
+  console.log(eventsState.dateEvents);
   const handleClickTab = useCallback((e) => {
     const buttonText = e.target.innerHTML;
 
@@ -32,7 +32,7 @@ const List = () => {
   }, [eventId]);
 
   return (
-    <div className="w-[400px] h-full border-[0.5px] border-gray-500 ">
+    <div className="flex-1 h-full border-[0.5px] border-gray-500 ">
       <div className="w-full h-7 bg-gray-200 flex  justify-between  text-center ">
         <button
           className={
