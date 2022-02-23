@@ -3,10 +3,12 @@ import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
 import Geocoder from "src/components/Geocoder";
 import Direction from "src/components/Direction";
 import { useSnapshot } from "valtio";
-import { eventsState } from "src/stores/valtioState";
+import { eventsState, mapState } from "src/stores/valtioState";
+import RouteList from "src/components/routeList";
 
 const Map = () => {
   const eventsSnap = useSnapshot(eventsState);
+
   const center = {
     lat: 36.0492726,
     lng: 139.8128241,
@@ -32,14 +34,7 @@ const Map = () => {
         </GoogleMap>
       </LoadScript>
 
-      <div>
-        <p>ルート情報</p>
-        <div>
-          {eventsSnap.dateEvents?.map((event) => (
-            <p key={event.id}>{event.extendedProps.destination}</p>
-          ))}
-        </div>
-      </div>
+      <RouteList />
     </div>
   );
 };
