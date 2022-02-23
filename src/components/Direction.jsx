@@ -1,19 +1,18 @@
 import React, { useEffect, useRef, useState } from "react";
 import { DirectionsService, DirectionsRenderer } from "@react-google-maps/api";
 import { useSnapshot } from "valtio";
-import { latLngState } from "src/stores/valtioState";
+import { mapState } from "src/stores/valtioState";
 
 const Direction = () => {
-  const latLngSnap = useSnapshot(latLngState);
+  const mapSnap = useSnapshot(mapState);
   const [currentDirection, setCurrentDirection] = useState(null);
-  const [optimize, setOptimize] = useState(false);
 
   const center = {
     lat: 36.0492726,
     lng: 139.8128241,
   };
 
-  const wayPoints = latLngSnap.latLng?.map((LatLng) => ({
+  const wayPoints = mapSnap.latLng?.map((LatLng) => ({
     location: { lat: LatLng.lat, lng: LatLng.lng },
   }));
 
@@ -22,7 +21,7 @@ const Direction = () => {
     destination: center,
     waypoints: wayPoints,
     travelMode: "DRIVING",
-    optimizeWaypoints: optimize,
+    optimizeWaypoints: mapSnap.optimize,
   };
 
   let count = useRef(0);
@@ -42,11 +41,11 @@ const Direction = () => {
 
   useEffect(() => {
     count.current = 0;
-  }, [latLngSnap.latLng]);
+  }, [mapSnap.latLng]);
 
   return (
     <div>
-      {latLngSnap.latLng ? (
+      {mapSnap.latLng ? (
         <div>
           <DirectionsService
             options={options}

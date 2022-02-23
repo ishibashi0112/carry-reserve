@@ -7,8 +7,16 @@ export const eventsState = proxy({
   selectEvent: {},
 });
 
-//緯度経度
-export const latLngState = proxy({ latLng: [] });
+//マップ
+export const mapState = proxy({
+  latLng: [],
+  optimize: false,
+  clickEventOptimize: () => {
+    mapState.optimize
+      ? (mapState.optimize = false)
+      : (mapState.optimize = true);
+  },
+});
 
 // サイドバー
 export const sideBarState = proxy({

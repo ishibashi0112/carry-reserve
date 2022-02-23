@@ -1,12 +1,12 @@
 import { Marker } from "@react-google-maps/api";
 import React, { useEffect } from "react";
-import { eventsState, latLngState } from "src/stores/valtioState";
+import { eventsState, mapState } from "src/stores/valtioState";
 
 import { useSnapshot } from "valtio";
 
 const Geocoder = () => {
   const eventsSnap = useSnapshot(eventsState);
-  const latLngSnap = useSnapshot(latLngState);
+  const mapSnap = useSnapshot(mapState);
 
   const addressArray = eventsSnap.dateEvents?.map((event) => {
     const address1 = event.extendedProps.address1;
@@ -29,7 +29,7 @@ const Geocoder = () => {
           const prevLatLngData = [...latLngData];
           latLngData = [...prevLatLngData, latLng];
           if (addressArray.length === latLngData.length) {
-            latLngState.latLng = latLngData;
+            mapState.latLng = latLngData;
           }
         }
       });
@@ -42,7 +42,7 @@ const Geocoder = () => {
 
   return (
     <>
-      {latLngSnap.latLng?.map((latLng) => {
+      {mapSnap.latLng?.map((latLng) => {
         return <Marker key={latLng.lat} position={latLng} />;
       })}
     </>
