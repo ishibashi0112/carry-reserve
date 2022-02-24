@@ -4,7 +4,7 @@ import Geocoder from "src/components/Geocoder";
 import Direction from "src/components/Direction";
 import { useSnapshot } from "valtio";
 import { eventsState, mapState } from "src/stores/valtioState";
-import RouteList from "src/components/routeList";
+import RouteList from "src/components/RouteList";
 
 const Map = () => {
   const eventsSnap = useSnapshot(eventsState);
