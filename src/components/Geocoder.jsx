@@ -9,8 +9,8 @@ const Geocoder = () => {
   const mapSnap = useSnapshot(mapState);
 
   const addressArray = eventsSnap.dateEvents?.map((event) => {
-    const address1 = event.extendedProps.address1;
-    const address2 = event.extendedProps.address2;
+    const address1 = event.address1;
+    const address2 = event.address2;
     return {
       address: `${address1}${address2}`,
     };

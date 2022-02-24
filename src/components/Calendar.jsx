@@ -21,7 +21,7 @@ const Calendar = () => {
 
   const getEventUserName = async (events) => {
     const addUserNameArray = events.map(async (event) => {
-      const eventUserId = event.extendedProps.user_id;
+      const eventUserId = event.user_id;
       const q = query(
         collection(db, "users"),
         where("user_id", "==", eventUserId)
@@ -42,7 +42,16 @@ const Calendar = () => {
     const DateEvents = eventsSnap.events.filter(
       (event) => dateStr === event.date
     );
-    const addUserNameArray = await getEventUserName(DateEvents);
+    const convertedArray = DateEvents.map((event) => {
+      return {
+        id: event.id,
+        title: event.title,
+        date: event.date,
+        ...event.extendedProps,
+      };
+    });
+    console.log(convertedArray);
+    const addUserNameArray = await getEventUserName(convertedArray);
 
     eventsState.dateEvents = addUserNameArray;
   };
