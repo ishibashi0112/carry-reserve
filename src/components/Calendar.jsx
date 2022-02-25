@@ -194,10 +194,6 @@ const Calendar = () => {
           events={eventsSnap.events}
           dateClick={handleClickDate}
           eventClick={handleClickEvent}
-          // eventDidMount={(el) => {
-
-          // }}
-          // defaultAllDay={false}
         />
       </div>
     </div>
