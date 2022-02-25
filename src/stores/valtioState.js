@@ -1,6 +1,7 @@
 import {
   addDoc,
   collection,
+  deleteDoc,
   doc,
   getDocs,
   query,
@@ -16,6 +17,7 @@ export const eventsState = proxy({
   events: [],
   dateEvents: [],
   selectEvent: {},
+  deleteEventId: [],
 });
 
 //マップ
@@ -48,6 +50,14 @@ export const routeListState = proxy({
         routeListState.switching = "保存";
         break;
       case "保存":
+        if (eventsState.deleteEventId.length) {
+          eventsState.deleteEventId.map(async (eventId) => {
+            const eventDoc = doc(db, "events", eventId);
+            eventDoc ? await deleteDoc(eventDoc) : null;
+          });
+          eventsState.deleteEventId = [];
+        }
+
         events.map(async (event, index) => {
           if (event.destination === "自社") {
             await addDoc(collection(db, "events"), {

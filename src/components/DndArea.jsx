@@ -74,6 +74,23 @@ const DndArea = () => {
     setEventsArray(addHomeToArray);
   };
 
+  const handleClickBack = useCallback(() => {
+    routeListState.switching = "編集";
+  }, []);
+
+  const handleClickDelete = useCallback(
+    (e) => {
+      const deleteEventId = e.currentTarget.dataset.id;
+      const newEventArray = eventsArray.filter(
+        (event) => event.id !== deleteEventId
+      );
+
+      eventsState.deleteEventId = [...eventsState.deleteEventId, deleteEventId];
+      setEventsArray(newEventArray);
+    },
+    [eventsArray]
+  );
+
   return (
     <DragDropContext onDragEnd={handleOnDragEnd}>
       <Droppable droppableId="dropEvents">
@@ -106,6 +123,9 @@ const DndArea = () => {
                     {...provided.draggableProps}
                     {...provided.dragHandleProps}
                   >
+                    <button data-id={event.id} onClick={handleClickDelete}>
+                      ×
+                    </button>
                     <p> {event.destination}</p>
                     <p>{event.time_zone}</p>
                     <p>{event.items}</p>
@@ -116,14 +136,13 @@ const DndArea = () => {
               </Draggable>
             ))}
             {provided.placeholder}
-            <button onClick={handleClickAddButton}>自社追加</button>
-            {routeListSnap.switching === "保存" ? (
+            <button onClick={handleClickAdd}>自社追加</button>
+            <button onClick={handleClickBack}>戻る</button>
               <button
                 onClick={() => routeListState.handleClickButton(eventsArray)}
               >
                 保存する
               </button>
-            ) : null}
           </ul>
         )}
       </Droppable>
