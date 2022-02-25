@@ -73,6 +73,7 @@ const Calendar = () => {
         description: e.event.extendedProps.description,
         isConfirm: e.event.extendedProps.isConfirm,
         isDone: e.event.extendedProps.isDone,
+        route_order: e.event.extendedProps.route_order,
         user_id: e.event.extendedProps.user_id,
       };
 
@@ -103,6 +104,7 @@ const Calendar = () => {
           description: doc.data().description,
           isConfirm: doc.data().isConfirm,
           isDone: doc.data().isDone,
+          route_order: doc.data().route_order,
           user_id: doc.data().user_id,
         },
       }));
@@ -133,6 +135,7 @@ const Calendar = () => {
           description: doc.data().description,
           isConfirm: doc.data().isConfirm,
           isDone: doc.data().isDone,
+          route_order: doc.data().route_order,
           user_id: doc.data().user_id,
         },
       }));

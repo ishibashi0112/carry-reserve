@@ -61,6 +61,7 @@ const DndArea = () => {
       phone_number: "0471030606",
       isConfirm: false,
       isDone: false,
+      route_order: null,
       items: "",
       key_person: "",
       time_zone: "",

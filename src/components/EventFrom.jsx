@@ -8,6 +8,7 @@ const EventForm = () => {
     defaultValues: {
       isDone: false,
       isConfirm: false,
+      route_order: null,
       user_id: auth.currentUser.uid,
     },
     criteriaMode: "all",
@@ -28,6 +29,7 @@ const EventForm = () => {
       description: data.description,
       isConfirm: data.isConfirm,
       isDone: data.isDone,
+      route_order: data.route_order,
       user_id: data.user_id,
     });
     console.log(eventData);
@@ -164,6 +166,7 @@ const EventForm = () => {
 
         <input type="hidden" {...register("isConfirm")} />
         <input type="hidden" {...register("isDone")} />
+        <input type="hidden" {...register("route_order")} />
         <input type="hidden" {...register("user_id")} />
         <input
           type="submit"
