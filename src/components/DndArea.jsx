@@ -1,13 +1,11 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { useSnapshot } from "valtio";
-import { eventsState, mapState, routeListState } from "src/stores/valtioState";
+import { eventsState, routeListState } from "src/stores/valtioState";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 const DndArea = () => {
   const eventsSnap = useSnapshot(eventsState);
   const [eventsArray, setEventsArray] = useState(eventsSnap.dateEvents);
-
-  const routeListSnap = useSnapshot(routeListState);
 
   const handleOnDragEnd = (results) => {
     const prevArray = eventsArray;
@@ -34,41 +32,41 @@ const DndArea = () => {
     }
   };
 
-  const handleClickAddButton = () => {
+  const handleClickAdd = () => {
+    //⬇︎⬇︎自社の数に応じてIDを作成し、付与
     const createId = () => {
       const CheckedArray = eventsArray.filter(
         (event) => event.destination === "自社"
       );
       const id = CheckedArray.length.toString();
       return id;
-    }; //自社の数に応じてIDを作成
-
+    };
+    //⬇︎⬇︎選択中の他イベントと同じdateを作成
     const createDate = () => {
       const check = eventsSnap.dateEvents.filter(
         (event) => event.destination !== "自社"
       );
       const date = check[0] ? check[0].date : null;
       return date;
-    }; //選択中の他イベントと同じdateを作成
+    };
 
     const homeCompanyData = {
       id: createId(),
       date: createDate(),
       zipcode: "2700213",
       address1: "千葉県野田市桐ヶ作210",
-      address2: "",
+      address2: null,
       destination: "自社",
       phone_number: "0471030606",
       isConfirm: false,
       isDone: false,
       route_order: null,
-      items: "",
-      key_person: "",
-      time_zone: "",
-      user_id: "",
-      description: "",
+      items: null,
+      key_person: null,
+      time_zone: null,
+      user_id: null,
+      description: null,
     };
-    console.log(homeCompanyData);
     const addHomeToArray = [...eventsArray, homeCompanyData];
 
     setEventsArray(addHomeToArray);
@@ -138,11 +136,11 @@ const DndArea = () => {
             {provided.placeholder}
             <button onClick={handleClickAdd}>自社追加</button>
             <button onClick={handleClickBack}>戻る</button>
-              <button
-                onClick={() => routeListState.handleClickButton(eventsArray)}
-              >
-                保存する
-              </button>
+            <button
+              onClick={() => routeListState.handleClickButton(eventsArray)}
+            >
+              保存する
+            </button>
           </ul>
         )}
       </Droppable>
