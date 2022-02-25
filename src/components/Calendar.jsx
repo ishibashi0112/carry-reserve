@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef } from "react";
+import React, { useCallback, useEffect } from "react";
 import FullCalendar from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
@@ -16,32 +16,44 @@ import { db } from "src/firebase/firebase";
 import { eventsState } from "src/stores/valtioState";
 import { useSnapshot } from "valtio";
 
+export const sortEventsByRouteOrder = (events) => {
+  const sortedArray = events.reduce((prev, current) => {
+    let newArray = prev;
+    const currentRouteOrder = current.route_order;
+    newArray[currentRouteOrder] = current;
+    return newArray;
+  }, []);
+  return sortedArray;
+};
+
+export const getEventUserName = async (events) => {
+  const addUserNameArray = events.map(async (event) => {
+    const eventUserId = event.user_id;
+    const q = query(
+      collection(db, "users"),
+      where("user_id", "==", eventUserId)
+    );
+    const eventUserDocs = await getDocs(q);
+    const eventUserName = eventUserDocs.docs[0].data().user_name;
+
+    return { ...event, user_name: eventUserName };
+  });
+
+  const results = await Promise.all(addUserNameArray);
+
+  return results;
+};
+
 const Calendar = () => {
   const eventsSnap = useSnapshot(eventsState);
 
-  const getEventUserName = async (events) => {
-    const addUserNameArray = events.map(async (event) => {
-      const eventUserId = event.user_id;
-      const q = query(
-        collection(db, "users"),
-        where("user_id", "==", eventUserId)
-      );
-      const eventUserDocs = await getDocs(q);
-      const eventUserName = eventUserDocs.docs[0].data().user_name;
-
-      return { ...event, user_name: eventUserName };
-    });
-
-    const results = await Promise.all(addUserNameArray);
-
-    return results;
-  };
-
   const handleClickDate = async (data) => {
+    //⬇︎⬇︎全イベントから選択した日付のイベントを抽出。
     const dateStr = data.dateStr;
     const DateEvents = eventsSnap.events.filter(
       (event) => dateStr === event.date
     );
+    //⬇︎⬇︎extendedPropsキーのネストを外す。
     const convertedArray = DateEvents.map((event) => {
       return {
         id: event.id,
@@ -50,10 +62,17 @@ const Calendar = () => {
         ...event.extendedProps,
       };
     });
-    console.log(convertedArray);
+    //⬇︎⬇usersフィールドにあるuser_nameをeventに追加。
     const addUserNameArray = await getEventUserName(convertedArray);
+    //⬇︎⬇ルート確定済みイベントの場合は、ルート順に並び替え
+    const isConfirm = addUserNameArray[0]
+      ? addUserNameArray[0].isConfirm
+      : null;
+    const sortedArray = isConfirm
+      ? sortEventsByRouteOrder(addUserNameArray)
+      : null;
 
-    eventsState.dateEvents = addUserNameArray;
+    eventsState.dateEvents = isConfirm ? sortedArray : addUserNameArray;
   };
 
   const handleClickEvent = useCallback(

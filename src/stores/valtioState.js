@@ -7,6 +7,7 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
+import { sortEventsByRouteOrder } from "src/components/Calendar";
 import { auth, db } from "src/firebase/firebase";
 import { proxy } from "valtio";
 
@@ -62,14 +63,14 @@ export const routeListState = proxy({
               description: event.description,
               isConfirm: true,
               isDone: false,
-              route_order: index + 1,
+              route_order: index,
               user_id: auth.currentUser.uid,
             });
           } else {
             const eventDoc = doc(db, "events", event.id);
             await updateDoc(eventDoc, {
               isConfirm: true,
-              route_order: index + 1,
+              route_order: index,
             });
           }
         });
@@ -99,8 +100,9 @@ export const routeListState = proxy({
           user_id: doc.data().user_id,
         }));
 
-        // await Promise.all(a);
-        eventsState.dateEvents = eventsArray;
+        const eventsSortedArray = sortEventsByRouteOrder(eventsArray);
+
+        eventsState.dateEvents = eventsSortedArray;
 
         routeListState.switching = "編集";
         break;
