@@ -29,6 +29,7 @@ export const mapState = proxy({
       ? (mapState.optimize = false)
       : (mapState.optimize = true);
   },
+  distanceAndTimes: [],
 });
 
 // サイドバー

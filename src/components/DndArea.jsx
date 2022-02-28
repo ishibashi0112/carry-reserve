@@ -89,7 +89,74 @@ const DndArea = () => {
     [eventsArray]
   );
 
+  // const handleClickMapUpdate = () => {};
+
+  const initialDate = new Date(2022, 1, 1, 8, 0, 0);
+  const dateToString = useCallback((date, addValue) => {
+    console.log(date);
+    const prevUnixTime = date.getTime();
+    const upUnixTime = prevUnixTime + addValue * 1000;
+    const newUnixTime = addValue ? upUnixTime : prevUnixTime;
+    const newDate = new Date(newUnixTime);
+    const dateStr = newDate.toLocaleTimeString().slice(0, -3);
+    console.log(newDate);
+    return { dateStr, newDate };
+  }, []);
+
+  const convertedDirectionResult = mapSnap.distanceAndTimes.reduce(
+    (prev, current, i) => {
+      console.log(prev);
+      const currentIndex = mapSnap.distanceAndTimes.length - 1;
+      const distanceStr = current.distance.text;
+      const durationStr = current.duration.text;
+      const durationValue = current.duration.value;
+      const prevDateOb = i === 0 ? initialDate : prev[i - 1].date;
+      console.log(dateToString(prevDateOb, durationValue));
+      const { dateStr: newArrivalDateStr, newDate: newArrivalDateOb } =
+        dateToString(prevDateOb, durationValue);
+
+      console.log(newArrivalDateStr, newArrivalDateOb);
+      const { dateStr: newDepartureDateStr, newDate: newDepartureDateOb } =
+        dateToString(newArrivalDateOb, 600);
+      const arrivalStr = `着 : ${newArrivalDateStr}`;
+      const departureStr = `発 : ${newDepartureDateStr}`;
+      const result = {
+        distance: distanceStr,
+        duration: durationStr,
+        departure: departureStr,
+        arrival: arrivalStr,
+        departure: currentIndex !== i ? departureStr : null,
+        date: newDepartureDateOb,
+      };
+
+      return [...prev, result];
+    },
+    []
+  );
+
   return (
+    <div>
+      <ul className="flex justify-around w-4/5 mx-auto">
+        <li>
+          <p>自社</p>
+          <p>{`発 : 8:00`}</p>
+        </li>
+
+        {convertedDirectionResult.map((direction, i) => (
+          <li key={i.toString()} className="flex">
+            <div>
+              <p>➡︎</p>
+              <p>{direction.distance}</p>
+              <p>{direction.duration}</p>
+            </div>
+            <div>
+              <p>{eventsArray[i] ? eventsArray[i].destination : "自社"}</p>
+              <p>{direction.arrival}</p>
+              <p>{direction.departure}</p>
+            </div>
+          </li>
+        ))}
+      </ul>
     <DragDropContext onDragEnd={handleOnDragEnd}>
       <Droppable droppableId="dropEvents">
         {(provided, snapshot) => (

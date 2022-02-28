@@ -11,17 +11,14 @@ const Direction = () => {
     lat: 36.0492726,
     lng: 139.8128241,
   };
-
-  const wayPoints = mapSnap.latLng?.map((LatLng) => ({
-    location: { lat: LatLng.lat, lng: LatLng.lng },
-  }));
+  const wayPoints = mapSnap.latLng;
 
   const options = {
     origin: center,
     destination: center,
     waypoints: wayPoints,
     travelMode: "DRIVING",
-    optimizeWaypoints: mapSnap.optimize,
+    // optimizeWaypoints: mapSnap.optimize,
   };
 
   let count = useRef(0);
@@ -31,6 +28,10 @@ const Direction = () => {
     if (res !== null && count.current < 2) {
       if (res.status === "OK") {
         count.current += 1;
+        const distanceAndTimes = res.routes[0].legs.map((leg) => {
+          return { distance: leg.distance, duration: leg.duration };
+        });
+        mapState.distanceAndTimes = distanceAndTimes;
         setCurrentDirection(res);
       } else {
         console.log("response: ", res);
