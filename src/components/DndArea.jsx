@@ -50,7 +50,7 @@ const DndArea = () => {
       return date;
     };
 
-    const homeCompanyData = {
+    const homeData = {
       id: createId(),
       date: createDate(),
       zipcode: "2700213",
@@ -67,7 +67,7 @@ const DndArea = () => {
       user_id: null,
       description: null,
     };
-    const addHomeToArray = [...eventsArray, homeCompanyData];
+    const addHomeToArray = [...eventsArray, homeData];
 
     setEventsArray(addHomeToArray);
   };
@@ -201,17 +201,19 @@ const DndArea = () => {
               </Draggable>
             ))}
             {provided.placeholder}
-            <button onClick={handleClickAdd}>自社追加</button>
+              <button onClick={handleClickAddHome}>自社追加</button>
             <button onClick={handleClickBack}>戻る</button>
             <button
               onClick={() => routeListState.handleClickButton(eventsArray)}
             >
               保存する
             </button>
+              {/* <button onClick={handleClickMapUpdate}>地図更新</button> */}
           </ul>
         )}
       </Droppable>
     </DragDropContext>
+    </div>
   );
 };
 

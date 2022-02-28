@@ -10,8 +10,10 @@ const geocodePromiseResult = (address) => {
     geocoder.geocode(address, (results, status) => {
       if (status === "OK") {
         const latLng = {
-          lat: results[0].geometry.location.lat(),
-          lng: results[0].geometry.location.lng(),
+          location: {
+            lat: results[0].geometry.location.lat(),
+            lng: results[0].geometry.location.lng(),
+          },
         };
         resolve(latLng);
       } else {
@@ -32,7 +34,6 @@ const Geocoder = () => {
       address: `${address1}${address2}`,
     };
   });
-  console.log(addressArray);
 
   const geocodeing = async () => {
     const promiseResultArray = addressArray?.map(async (address) => {
@@ -43,16 +44,14 @@ const Geocoder = () => {
     mapState.latLng = latLngData;
   };
 
-  console.log(mapState.latLng);
-
   useEffect(() => {
     geocodeing();
   }, [addressArray]);
 
   return (
     <>
-      {mapSnap.latLng?.map((latLng) => {
-        return <Marker key={latLng.lat} position={latLng} />;
+      {mapSnap.latLng?.map((location, index) => {
+        return <Marker key={index} position={location.latLng} />;
       })}
     </>
   );
