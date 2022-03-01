@@ -82,7 +82,7 @@ const SideBar = () => {
   }, []);
 
   return (
-    <div className="w-[416px] h-screen bg-white border-t-[0.5px] border-gray-500 border-b-[0.5px] border-l-[0.5px] transition absolute top-16 right-0">
+    <div className="w-[416px] h-screen bg-white border-t-[0.5px] border-gray-500 border-b-[0.5px] border-l-[0.5px] transition absolute top-16 right-0 z-10">
       <button
         onClick={sideBarState.clickEvent}
         className=" w-5 ml-2 text-2xl cursor-pointer hover:text-blue-500 hover:transition active:text-blue-200"
