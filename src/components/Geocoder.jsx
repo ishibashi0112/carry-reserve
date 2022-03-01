@@ -27,26 +27,38 @@ const Geocoder = () => {
   const eventsSnap = useSnapshot(eventsState);
   const mapSnap = useSnapshot(mapState);
 
-  const addressArray = eventsSnap.dateEvents?.map((event) => {
-    const address1 = event.address1;
-    const address2 = event.address2 ? event.address2 : "";
-    return {
-      address: `${address1}${address2}`,
-    };
-  });
+  const dateEvents = eventsSnap?.dateEvents;
+  const editEvents = eventsSnap?.editEvents;
+
+  const eventsToAddressArray = (events) => {
+    const result = events.map((event) => {
+      const address1 = event.address1;
+      const address2 = event.address2 ? event.address2 : "";
+      return {
+        address: `${address1}${address2}`,
+      };
+    });
+    return result;
+  };
+
+  const addressArray = editEvents.length
+    ? eventsToAddressArray(editEvents)
+    : eventsToAddressArray(dateEvents);
 
   const geocodeing = async () => {
     const promiseResultArray = addressArray?.map(async (address) => {
+      console.log(address);
       const latLng = await geocodePromiseResult(address);
       return latLng;
     });
+
     const latLngData = await Promise.all(promiseResultArray);
     mapState.latLng = latLngData;
   };
 
   useEffect(() => {
     geocodeing();
-  }, [addressArray]);
+  }, [dateEvents, editEvents]);
 
   return (
     <>

@@ -77,6 +77,7 @@ const DndArea = () => {
   }, [eventsArray, eventsSnap.dateEvents]);
 
   const handleClickBack = useCallback(() => {
+    eventsState.editEvents = [];
     routeListState.switching = "編集";
   }, []);
 
@@ -93,37 +94,39 @@ const DndArea = () => {
     [eventsArray]
   );
 
-  // const handleClickMapUpdate = () => {};
+  const handleClickMapUpdate = () => {
+    eventsState.editEvents = eventsArray;
+  };
 
   const initialDate = new Date(2022, 1, 1, 8, 0, 0);
   const dateToString = useCallback((date, addValue) => {
-    console.log(date);
     const prevUnixTime = date.getTime();
     const upUnixTime = prevUnixTime + addValue * 1000;
     const newUnixTime = addValue ? upUnixTime : prevUnixTime;
     const newDate = new Date(newUnixTime);
     const dateStr = newDate.toLocaleTimeString().slice(0, -3);
-    console.log(newDate);
+
     return { dateStr, newDate };
   }, []);
 
   const convertedDirectionResult = mapSnap.distanceAndTimes.reduce(
     (prev, current, i) => {
-      console.log(prev);
       const currentIndex = mapSnap.distanceAndTimes.length - 1;
       const distanceStr = current.distance.text;
       const durationStr = current.duration.text;
       const durationValue = current.duration.value;
       const prevDateOb = i === 0 ? initialDate : prev[i - 1].date;
-      console.log(dateToString(prevDateOb, durationValue));
       const { dateStr: newArrivalDateStr, newDate: newArrivalDateOb } =
         dateToString(prevDateOb, durationValue);
-
-      console.log(newArrivalDateStr, newArrivalDateOb);
       const { dateStr: newDepartureDateStr, newDate: newDepartureDateOb } =
         dateToString(newArrivalDateOb, 600);
       const arrivalStr = `着 : ${newArrivalDateStr}`;
       const departureStr = `発 : ${newDepartureDateStr}`;
+
+      const events = eventsSnap.editEvents.length
+        ? eventsSnap.editEvents[i]
+        : eventsSnap.dateEvents[i];
+
       const result = {
         distance: distanceStr,
         duration: durationStr,
@@ -131,6 +134,7 @@ const DndArea = () => {
         arrival: arrivalStr,
         departure: currentIndex !== i ? departureStr : null,
         date: newDepartureDateOb,
+        events,
       };
 
       return [...prev, result];
@@ -146,20 +150,24 @@ const DndArea = () => {
           <p>{`発 : 8:00`}</p>
         </li>
 
-        {convertedDirectionResult.map((direction, i) => (
-          <li key={i.toString()} className="flex">
-            <div>
-              <p>➡︎</p>
-              <p>{direction.distance}</p>
-              <p>{direction.duration}</p>
-            </div>
-            <div>
-              <p>{eventsArray[i] ? eventsArray[i].destination : "自社"}</p>
-              <p>{direction.arrival}</p>
-              <p>{direction.departure}</p>
-            </div>
-          </li>
-        ))}
+        {convertedDirectionResult.map((direction, i) => {
+          return (
+            <li key={i.toString()} className="flex">
+              <div>
+                <p>➡︎</p>
+                <p>{direction.distance}</p>
+                <p>{direction.duration}</p>
+              </div>
+              <div>
+                <p>
+                  {direction?.events ? direction.events.destination : "自社"}
+                </p>
+                <p>{direction.arrival}</p>
+                <p>{direction.departure}</p>
+              </div>
+            </li>
+          );
+        })}
       </ul>
       <DragDropContext onDragEnd={handleOnDragEnd}>
         <Droppable droppableId="dropEvents">
@@ -212,7 +220,7 @@ const DndArea = () => {
               >
                 保存する
               </button>
-              {/* <button onClick={handleClickMapUpdate}>地図更新</button> */}
+              <button onClick={handleClickMapUpdate}>地図更新</button>
             </ul>
           )}
         </Droppable>

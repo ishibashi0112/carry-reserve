@@ -18,6 +18,7 @@ export const eventsState = proxy({
   dateEvents: [],
   selectEvent: {},
   deleteEventId: [],
+  editEvents: [],
 });
 
 //マップ
@@ -113,6 +114,7 @@ export const routeListState = proxy({
 
         const eventsSortedArray = sortEventsByRouteOrder(eventsArray);
 
+        eventsState.editEvents = [];
         eventsState.dateEvents = eventsSortedArray;
 
         routeListState.switching = "編集";
