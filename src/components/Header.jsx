@@ -22,7 +22,13 @@ const Header = () => {
           </button>
         ) : null}
 
-        {sideBarSnap.sideBar ? <SideBar /> : null}
+        <div
+          className={`absolute top-16 transition-all z-10 ${
+            sideBarSnap.sideBar ? "right-0" : "-right-2/4"
+          } `}
+        >
+          <SideBar />
+        </div>
       </div>
     </header>
   );
