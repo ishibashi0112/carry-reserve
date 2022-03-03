@@ -1,75 +1,30 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { IoCloseOutline } from "react-icons/io5";
 import { FiDelete } from "react-icons/fi";
 import { signOutAuth } from "src/firebase/firebaseAuth";
 import Image from "next/image";
-import { auth, db } from "src/firebase/firebase";
-import {
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  query,
-  where,
-} from "@firebase/firestore";
-import { onAuthStateChanged } from "@firebase/auth";
 import { sideBarState } from "src/stores/valtioState";
 import toast from "react-hot-toast";
 import { deleteSelectToast } from "src/hooks/useCustomToast";
+import { useShowSideBar } from "src/hooks/useShowSideBar";
 
 const SideBar = () => {
-  const [currentUserCompanyData, setCurrentUserCompanyData] = useState(null);
-  const [currentUserEventsData, setCurrentUserEventsData] = useState(null);
+  const { currentUserData, currentUserCompanyData, currentUserEventsData } =
+    useShowSideBar();
 
-  const getUserCompanyData = () => {
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        const usersRef = collection(db, "users");
-        const usersQuery = query(usersRef, where("user_id", "==", user.uid));
-        const userData = await getDocs(usersQuery);
-        const userDocs = userData.docs;
-        const currentUserData = userDocs.map((doc) => {
-          const data = doc.data();
-          return { ...data, id: doc.id };
-        });
+  const [companySwitch, setCompanySwitch] = useState(false);
+  const [eventSwitch, setEventSwitch] = useState(false);
 
-        const companiesRef = doc(
-          db,
-          "companies",
-          currentUserData[0].company_id
-        );
-        const companyDoc = await getDoc(companiesRef);
-        const currentCompanyData = companyDoc.data();
-        setCurrentUserCompanyData({
-          ...currentUserData[0],
-          ...currentCompanyData,
-        });
-      }
-    });
-  };
-
-  const getUserEvents = () => {
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        try {
-          const eventsRef = collection(db, "events");
-          const eventsQuery = query(
-            eventsRef,
-            where("user_id", "==", auth.currentUser.uid),
-            where("isDone", "==", false)
-          );
-          const eventsData = await getDocs(eventsQuery);
-          const eventsDocs = eventsData.docs;
-          const UserEventsData = eventsDocs.map((doc) => {
-            const data = doc.data();
-            return { ...data, id: doc.id };
-          });
-          setCurrentUserEventsData(UserEventsData);
-        } catch (error) {
-          alert(error);
-        }
-      }
-    });
+  const handleClickSwitch = (e) => {
+    const swith = e.currentTarget.dataset.switch;
+    switch (swith) {
+      case "events":
+        eventSwitch ? setEventSwitch(false) : setEventSwitch(true);
+        break;
+      case "company":
+        companySwitch ? setCompanySwitch(false) : setCompanySwitch(true);
+        break;
+    }
   };
 
   const handleClickDelete = async (e) => {
@@ -87,26 +42,6 @@ const SideBar = () => {
       success: "ログアウトしました",
       error: "失敗しました",
     });
-  };
-
-  useEffect(() => {
-    getUserCompanyData();
-    getUserEvents();
-  }, []);
-
-  const [companySwitch, setCompanySwitch] = useState(false);
-  const [eventSwitch, setEventSwitch] = useState(false);
-
-  const handleClickSwitch = (e) => {
-    const swith = e.currentTarget.dataset.switch;
-    switch (swith) {
-      case "events":
-        eventSwitch ? setEventSwitch(false) : setEventSwitch(true);
-        break;
-      case "company":
-        companySwitch ? setCompanySwitch(false) : setCompanySwitch(true);
-        break;
-    }
   };
 
   return (
@@ -129,9 +64,9 @@ const SideBar = () => {
             width="70px"
           />
         </div>
-        {currentUserCompanyData ? (
+        {currentUserCompanyData && currentUserData ? (
           <ul className="my-auto ml-3">
-            <li>{currentUserCompanyData?.user_name}</li>
+            <li>{currentUserData?.user_name}</li>
             <li>{currentUserCompanyData?.company_name}</li>
           </ul>
         ) : (
