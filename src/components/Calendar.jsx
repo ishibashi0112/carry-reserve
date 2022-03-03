@@ -134,7 +134,7 @@ const Calendar = () => {
   }, []);
 
   const snapshot = async () => {
-    const res = await collection(db, "events");
+    const res = collection(db, "events");
     onSnapshot(res, async (querySnapshot) => {
       const resArray = querySnapshot.docs;
       const AllEvent = await resArray.map((doc) => ({
