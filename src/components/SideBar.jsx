@@ -1,48 +1,25 @@
-import React, { useState } from "react";
+import React from "react";
+import { AiOutlineCheck } from "react-icons/ai";
+import { AiOutlineEdit } from "react-icons/ai";
 import { IoCloseOutline } from "react-icons/io5";
 import { FiDelete } from "react-icons/fi";
-import { signOutAuth } from "src/firebase/firebaseAuth";
 import Image from "next/image";
 import { sideBarState } from "src/stores/valtioState";
-import toast from "react-hot-toast";
-import { deleteSelectToast } from "src/hooks/useCustomToast";
 import { useShowSideBar } from "src/hooks/useShowSideBar";
+import { useHandleSideBar } from "src/hooks/useHandleSideBar";
 
 const SideBar = () => {
   const { currentUserData, currentUserCompanyData, currentUserEventsData } =
     useShowSideBar();
 
-  const [companySwitch, setCompanySwitch] = useState(false);
-  const [eventSwitch, setEventSwitch] = useState(false);
-
-  const handleClickSwitch = (e) => {
-    const swith = e.currentTarget.dataset.switch;
-    switch (swith) {
-      case "events":
-        eventSwitch ? setEventSwitch(false) : setEventSwitch(true);
-        break;
-      case "company":
-        companySwitch ? setCompanySwitch(false) : setCompanySwitch(true);
-        break;
-    }
-  };
-
-  const handleClickDelete = async (e) => {
-    const eventId = e.currentTarget.dataset.id;
-    const eventDate = e.currentTarget.dataset.date;
-    const eventDestination = e.currentTarget.dataset.destination;
-    deleteSelectToast({ eventId, eventDate, eventDestination });
-    // getUserEvents();
-  };
-
-  const handleClickSignOut = () => {
-    sideBarState.sideBar = false;
-    toast.promise(signOutAuth(), {
-      loading: "Loading...",
-      success: "ログアウトしました",
-      error: "失敗しました",
-    });
-  };
+  const {
+    companySwitch,
+    eventSwitch,
+    handleClickSwitch,
+    handleClickEdit,
+    handleClickDelete,
+    handleClickSignOut,
+  } = useHandleSideBar();
 
   return (
     <div className="w-[416px] h-screen bg-white border-t-[0.5px] border-gray-500 border-b-[0.5px] border-l-[0.5px] ">
@@ -130,15 +107,40 @@ const SideBar = () => {
                   <p className="inline">{event.date}</p>
                   <p className="inline ml-2">{event.destination}</p>
                 </div>
-                <button
-                  className="block mr-2 text-xl hover:text-blue-400 hover:transition "
-                  data-id={event.id}
-                  data-date={event.date}
-                  data-destination={event.destination}
-                  onClick={handleClickDelete}
-                >
-                  <FiDelete />
-                </button>
+                {event.isConfirm ? (
+                  <div className="flex">
+                    <button
+                      className="mr-3 hover:text-blue-500 hover:transition active:text-blue-200"
+                      onClick={() => handleClickEdit(event)}
+                    >
+                      <AiOutlineEdit />
+                    </button>
+                    <p className="mr-2 text-xl  ">
+                      <AiOutlineCheck />
+                    </p>
+                  </div>
+                ) : (
+                  <div>
+                    <button
+                      className="mr-3 hover:text-blue-500 hover:transition active:text-blue-200"
+                      onClick={() => handleClickEdit(event)}
+                    >
+                      <AiOutlineEdit />
+                    </button>
+                    <button
+                      className="mr-2 text-xl hover:text-blue-500 hover:transition active:text-blue-200"
+                      onClick={() =>
+                        handleClickDelete(
+                          event.id,
+                          event.date,
+                          event.destination
+                        )
+                      }
+                    >
+                      <FiDelete />
+                    </button>
+                  </div>
+                )}
               </li>
             );
           })}
