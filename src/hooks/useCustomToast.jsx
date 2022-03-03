@@ -2,7 +2,6 @@ import React from "react";
 import toast from "react-hot-toast";
 import { deleteEvent } from "src/firebase/firestore";
 
-// export const useCustomToast = (data) => {
 const handleClickDismiss = (id) => {
   toast.dismiss(id);
 };
@@ -60,5 +59,3 @@ export const deleteSelectToast = (data) => {
     }
   );
 };
-//   return { isLoading, isSuccess, deleteSelectToast };
-// };
