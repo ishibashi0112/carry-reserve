@@ -5,6 +5,7 @@ import {
   getDoc,
   getDocs,
   query,
+  updateDoc,
   where,
 } from "firebase/firestore";
 import { db } from "src/firebase/firebase";
@@ -73,6 +74,15 @@ export const deleteEvent = async (eventId) => {
   const eventDoc = doc(db, "events", eventId);
   try {
     await deleteDoc(eventDoc);
+  } catch (error) {
+    alert(error);
+  }
+};
+
+export const updateEvent = async (eventId, updateOb) => {
+  try {
+    const eventDoc = doc(db, "events", eventId);
+    await updateDoc(eventDoc, updateOb);
   } catch (error) {
     alert(error);
   }
