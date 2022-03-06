@@ -10,7 +10,7 @@ const Header = () => {
   const sideBarSnap = useSnapshot(sideBarState);
 
   return (
-    <header className="h-16 flex justify-between px-8 bg-gray-100 relative">
+    <header className="h-14 flex justify-between px-8 bg-gray-100 relative">
       <h1 className="my-auto text-3xl">carry-manager</h1>
       <div className="my-auto">
         {router.pathname === "/" ? (
