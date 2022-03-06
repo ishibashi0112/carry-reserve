@@ -23,6 +23,7 @@ export const eventsState = proxy({
 
 //マップ
 export const mapState = proxy({
+  show: false,
   latLng: [],
   optimize: false,
   clickEventOptimize: () => {
