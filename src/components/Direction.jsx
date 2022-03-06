@@ -25,7 +25,7 @@ const Direction = () => {
   const directionsCallback = (res) => {
     console.log(res, count);
 
-    if (res !== null && count.current < 2) {
+    if (res !== null && count.current < 1) {
       if (res.status === "OK") {
         count.current += 1;
         const distanceAndTimes = res.routes[0].legs.map((leg) => {
