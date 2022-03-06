@@ -1,7 +1,7 @@
 import React from "react";
 import toast from "react-hot-toast";
 import { deleteEvent } from "src/firebase/firestore";
-import EditForm from "src/components/editForm";
+import EditForm from "src/components/EditForm";
 
 const handleClickDismiss = (id) => {
   toast.dismiss(id);
