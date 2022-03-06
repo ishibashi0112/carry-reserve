@@ -35,12 +35,18 @@ export const mapState = proxy({
 });
 
 // サイドバー
-export const sideBarState = proxy({
+export const headerState = proxy({
   sideBar: false,
-  clickEvent: () => {
-    sideBarState.sideBar
-      ? (sideBarState.sideBar = false)
-      : (sideBarState.sideBar = true);
+  addEventForm: false,
+  clickAddEventForm: () => {
+    headerState.addEventForm
+      ? (headerState.addEventForm = false)
+      : (headerState.addEventForm = true);
+  },
+  clickSideBar: () => {
+    headerState.sideBar
+      ? (headerState.sideBar = false)
+      : (headerState.sideBar = true);
   },
 });
 

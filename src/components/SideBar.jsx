@@ -4,7 +4,7 @@ import { AiOutlineEdit } from "react-icons/ai";
 import { IoCloseOutline } from "react-icons/io5";
 import { FiDelete } from "react-icons/fi";
 import Image from "next/image";
-import { sideBarState } from "src/stores/valtioState";
+import { headerState } from "src/stores/valtioState";
 import { useShowSideBar } from "src/hooks/useShowSideBar";
 import { useHandleSideBar } from "src/hooks/useHandleSideBar";
 
@@ -24,7 +24,7 @@ const SideBar = () => {
   return (
     <div className="w-[416px] h-screen bg-white border-t-[0.5px] border-gray-500 border-b-[0.5px] border-l-[0.5px] ">
       <button
-        onClick={sideBarState.clickEvent}
+        onClick={headerState.clickSideBar}
         className=" w-8 h-8 ml-2 text-2xl cursor-pointer rounded-full hover:bg-gray-200 hover:text-blue-500 hover:transition active:text-blue-200"
       >
         <p className="flex justify-center">
