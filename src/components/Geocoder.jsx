@@ -47,7 +47,6 @@ const Geocoder = () => {
 
   const geocodeing = async () => {
     const promiseResultArray = addressArray?.map(async (address) => {
-      console.log(address);
       const latLng = await geocodePromiseResult(address);
       return latLng;
     });
