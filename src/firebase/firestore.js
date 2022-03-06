@@ -1,4 +1,5 @@
 import {
+  addDoc,
   collection,
   deleteDoc,
   doc,
@@ -83,6 +84,25 @@ export const updateEvent = async (eventId, updateOb) => {
   try {
     const eventDoc = doc(db, "events", eventId);
     await updateDoc(eventDoc, updateOb);
+  } catch (error) {
+    alert(error);
+  }
+};
+
+export const getEventsHistory = async () => {
+  try {
+    const search1 = ["isDone", "==", true];
+    const eventsData = await whereSearch("events", search1);
+    const results = docsMap(eventsData);
+    return results;
+  } catch (error) {
+    alert(error);
+  }
+};
+
+export const newEvent = async (data) => {
+  try {
+    await addDoc(collection(db, "events"), data);
   } catch (error) {
     alert(error);
   }

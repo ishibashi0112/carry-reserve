@@ -1,10 +1,18 @@
 import { addDoc, collection } from "@firebase/firestore";
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { auth, db } from "src/firebase/firebase";
+import { headerState } from "src/stores/valtioState";
+import { IoCloseOutline } from "react-icons/io5";
+import { BiSearchAlt2 } from "react-icons/bi";
+import { useHistorySearch } from "src/hooks/useHistorySearch";
+import { newEvent } from "src/firebase/firestore";
+import { promiseToast } from "src/hooks/useCustomToast";
 
 const EventForm = () => {
-  const { register, handleSubmit, reset } = useForm({
+  const { text, search, setText, handleOnChange } = useHistorySearch();
+
+  const { register, handleSubmit, setValue, reset } = useForm({
     defaultValues: {
       isDone: false,
       isConfirm: false,
@@ -14,45 +22,62 @@ const EventForm = () => {
     criteriaMode: "all",
   });
 
+  const handleClickHistory = (event) => {
+    for (const key in event) {
+      setValue(key, event[key]);
+    }
+    setText("");
+  };
+
   const onSubmit = useCallback(async (data) => {
-    console.log(data);
-    const eventData = await addDoc(collection(db, "events"), {
-      destination: data.destination,
-      date: data.date,
-      time_zone: data.time_zone,
-      zipcode: data.zipcode,
-      address1: data.address1,
-      address2: data.address2,
-      phone_number: data.phone_number,
-      key_person: data.key_person,
-      items: data.items,
-      description: data.description,
-      isConfirm: data.isConfirm,
-      isDone: data.isDone,
-      route_order: data.route_order,
-      user_id: data.user_id,
-    });
-    console.log(eventData);
+    promiseToast(newEvent(data), "新規作成");
     reset();
   }, []);
 
-  const handleClickSearch = () => {
-    console.log("参照");
-  };
-
   return (
-    <div>
+    <div className="">
+      <button
+        className="block ml-auto  text-2xl rounded-full hover:bg-gray-200 hover:text-blue-500 hover:transition active:text-blue-200"
+        onClick={headerState.clickAddEventForm}
+      >
+        <IoCloseOutline />
+      </button>
+
+      <div className="flex justify-center">
+        <div className="relative flex w-3/5  items-center border rounded-md shadow">
+          <BiSearchAlt2 />
+          <input
+            type="text"
+            className="w-full outline-none"
+            placeholder="履歴より検索"
+            value={text}
+            onChange={handleOnChange}
+          />
+          {search?.length ? (
+            <ul className="absolute top-7 h-52 w-52 border rounded-md bg-white shadow  overscroll-y-auto ">
+              {search.map((event) => (
+                <li
+                  className="border-b hover:bg-blue-100 active:opacity-70"
+                  key={event.id}
+                >
+                  <div
+                    className="truncate"
+                    onClick={() => handleClickHistory(event)}
+                    aria-hidden={true}
+                  >
+                    {event.destination}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          ) : null}
+        </div>
+      </div>
+
       <form
         className="w-4/5 mx-auto m-3 flex flex-col gap-2  "
         onSubmit={handleSubmit(onSubmit)}
       >
-        <button
-          className="block p-[0.1rem] text-xs font-bold border rounded-md border-gray-300 hover:bg-blue-200 active:bg-blue-400"
-          onClick={handleClickSearch}
-        >
-          履歴から参照
-        </button>
-
         <label className=" block text-xs ">
           行き先
           <p className="ml-1 inline text-sm text-red-600">※</p>
