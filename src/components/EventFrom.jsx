@@ -1,7 +1,6 @@
-import { addDoc, collection } from "@firebase/firestore";
-import React, { useCallback, useState } from "react";
+import React, { useCallback } from "react";
 import { useForm } from "react-hook-form";
-import { auth, db } from "src/firebase/firebase";
+import { auth } from "src/firebase/firebase";
 import { headerState } from "src/stores/valtioState";
 import { IoCloseOutline } from "react-icons/io5";
 import { BiSearchAlt2 } from "react-icons/bi";
@@ -42,7 +41,6 @@ const EventForm = () => {
       >
         <IoCloseOutline />
       </button>
-
       <div className="flex justify-center">
         <div className="relative flex w-3/5  items-center border rounded-md shadow">
           <BiSearchAlt2 />
