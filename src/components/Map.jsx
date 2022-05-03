@@ -16,7 +16,9 @@ const Map = () => {
 
   return (
     <div className={`${mapSnap.show ? "" : "hidden"} w-full`}>
-      <LoadScript googleMapsApiKey={process.env.GOOGLE_MAPS_API_KEY}>
+      <LoadScript
+        googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
+      >
         <GoogleMap
           mapContainerStyle={{ width: "100%", height: "350px" }}
           center={center}

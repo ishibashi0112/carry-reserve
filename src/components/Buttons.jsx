@@ -3,6 +3,7 @@ import { BsCheckLg } from "react-icons/bs";
 import { GrUpdate } from "react-icons/gr";
 import { useSnapshot } from "valtio";
 import { eventsState, mapState, routeListState } from "src/stores/valtioState";
+import { Button } from "@mantine/core";
 
 const Buttons = (props) => {
   const events = props.events;
@@ -88,13 +89,16 @@ const Buttons = (props) => {
 
   if (routeListSnap.switching === "編集") {
     return (
-      <div className="flex">
-        <button
-          className="block p-1 m-1 border rounded-md text-sm text-white bg-gray-600  transition  hover:bg-blue-400 hover:border-blue-400 hover:transition active:bg-blue-200 active:border-blue-200"
+      <div className="flex mt-3">
+        <Button
+          className="m-1"
+          variant="light"
+          color="dark"
+          compact
           onClick={routeListState.handleClickButton}
         >
           {routeListSnap.switching}
-        </button>
+        </Button>
       </div>
     );
   }
@@ -103,40 +107,57 @@ const Buttons = (props) => {
     <div>
       <div className="flex justify-between mt-3 mx-4">
         <div className="flex">
-          <button
-            className=" p-1 m-1 border rounded-md text-sm text-white bg-gray-600  transition  hover:bg-blue-400 hover:border-blue-400 hover:transition active:bg-blue-200 active:border-blue-200"
+          <Button
+            className="m-1"
+            variant="light"
+            color="dark"
+            compact
             onClick={handleClickBack}
           >
             戻る
-          </button>
-          <button
-            className=" p-1 m-1 border rounded-md text-sm text-white bg-gray-600  transition  hover:bg-blue-400 hover:border-blue-400 hover:transition active:bg-blue-200 active:border-blue-200"
+          </Button>
+
+          <Button
+            className="m-1"
+            variant="light"
+            color="dark"
+            compact
             onClick={handleClickAddHome}
           >
             自社追加
-          </button>
+          </Button>
 
-          <button
-            className=" p-1 m-1 border rounded-md text-sm text-white bg-gray-600 transition hover:bg-blue-400 hover:border-blue-400 hover:transition active:bg-blue-200 active:border-blue-200"
+          <Button
+            className="m-1"
+            variant="light"
+            color="dark"
+            compact
             onClick={handleclickShowMap}
           >
             {mapSnap.show ? "地図を閉じる" : "地図表示"}
-          </button>
-          <button
-            className="block p-1 m-1  rounded-md text-sm   transition  hover:bg-blue-400  hover:transition active:bg-blue-200 "
+          </Button>
+
+          <Button
+            className="m-1"
+            variant="light"
+            color="dark"
+            compact
             onClick={handleClickMapUpdate}
           >
             <GrUpdate color={"#ffffff"} />
-          </button>
+          </Button>
         </div>
 
         <div>
-          <button
-            className="block p-1 m-1 border rounded-md text-sm text-white bg-gray-600  transition  hover:bg-blue-400 hover:border-blue-400 hover:transition active:bg-blue-200 active:border-blue-200"
+          <Button
+            className="m-1"
+            variant="light"
+            color="dark"
+            compact
             onClick={() => routeListState.handleClickButton(events)}
           >
             保存する
-          </button>
+          </Button>
         </div>
       </div>
     </div>

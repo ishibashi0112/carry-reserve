@@ -3,6 +3,7 @@ import { useSnapshot } from "valtio";
 import { eventsState } from "src/stores/valtioState";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import Buttons from "src/components/Buttons";
+import { Avatar, Badge, Table } from "@mantine/core";
 
 const DndArea = () => {
   const eventsSnap = useSnapshot(eventsState);
@@ -54,50 +55,81 @@ const DndArea = () => {
       <DragDropContext onDragEnd={handleOnDragEnd}>
         <Droppable droppableId="dropEvents">
           {(provided, snapshot) => (
-            <table
-              className={`${
-                snapshot.isDraggingOver ? " opacity-70" : ""
-              } dropEvents  w-full table-fixed mt-6`}
+            <Table
+              classNames={{ root: "dropEvents" }}
+              highlightOnHover
               {...provided.droppableProps}
               ref={provided.innerRef}
             >
-              <tr className=" border-b text-center text-sm ">
-                <th>{""}</th>
-                <th>行き先</th>
-                <th>時間帯</th>
-                <th>品目情報</th>
-                <th>備考</th>
-                <th>予約者</th>
-              </tr>
-              {eventsArray?.map((event, index) => (
-                <Draggable key={event.id} draggableId={event.id} index={index}>
-                  {(provided, snapshot) => (
-                    <tr
-                      className={`${
-                        snapshot.isDragging ? "bg-blue-200 shadow-md" : ""
-                      }
-                        h-9 border-b text-center `}
-                      key={event.id}
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                      {...provided.dragHandleProps}
-                    >
-                      <td>
-                        <button data-id={event.id} onClick={handleClickDelete}>
-                          ×
-                        </button>
-                      </td>
-                      <td className="truncate"> {event.destination}</td>
-                      <td className="truncate">{event.time_zone}</td>
-                      <td className="truncate">{event.items}</td>
-                      <td className="truncate">{event.description}</td>
-                      <td className="truncate">{event.user_name}</td>
-                    </tr>
-                  )}
-                </Draggable>
-              ))}
-              {provided.placeholder}
-            </table>
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>行き先</th>
+                  <th>時間帯</th>
+                  <th>品目情報</th>
+                  <th>備考</th>
+                  <th>予約者</th>
+                </tr>
+              </thead>
+              <tbody>
+                {eventsArray?.map((event, index) => (
+                  <Draggable
+                    key={event.id}
+                    draggableId={event.id}
+                    index={index}
+                  >
+                    {(provided, snapshot) => (
+                      <tr
+                        className={`${
+                          snapshot.isDragging
+                            ? "bg-white shadow-md border rounded-sm"
+                            : ""
+                        }`}
+                        key={event.id}
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                      >
+                        <td>
+                          <button
+                            data-id={event.id}
+                            onClick={handleClickDelete}
+                          >
+                            ×
+                          </button>
+                        </td>
+                        <td> {event.destination}</td>
+                        <td>{event.time_zone}</td>
+                        <td>{event.items}</td>
+                        <td>{event.description}</td>
+                        <td>
+                          <Badge
+                            className="pl-0 w-20"
+                            classNames={{
+                              root: "pr-2",
+                              leftSection: "mr-[2px]",
+                            }}
+                            variant="outline"
+                            fullWidth
+                            leftSection={
+                              <Avatar
+                                alt="Avatar for badge"
+                                size={20}
+                                src={"IMG-8743.JPG"}
+                                radius={"xl"}
+                              />
+                            }
+                          >
+                            {event.user_name}
+                          </Badge>
+                        </td>
+                      </tr>
+                    )}
+                  </Draggable>
+                ))}
+                {provided.placeholder}
+              </tbody>
+            </Table>
           )}
         </Droppable>
       </DragDropContext>

@@ -1,42 +1,64 @@
-import React from "react";
+import React, { useState } from "react";
 import { GoThreeBars } from "react-icons/go";
 import { CgAddR } from "react-icons/cg";
 import { useRouter } from "next/router";
 import SideBar from "src/components/SideBar";
 import { useSnapshot } from "valtio";
 import { headerState } from "src/stores/valtioState";
+import { Burger, Button, Drawer, Title } from "@mantine/core";
+import { AiOutlineCarryOut } from "react-icons/ai";
 
 const Header = () => {
   const router = useRouter();
   const headerSnap = useSnapshot(headerState);
+  const [opened, setOpened] = useState(false);
 
   return (
-    <header className="h-14 flex justify-between px-8 bg-gray-100 relative">
-      <h1 className="my-auto text-3xl">carry-manager</h1>
+    <header className="h-11 flex justify-between px-8 bg-gray-100 relative">
+      <Title className="my-auto" order={2}>
+        <p className="flex items-center">
+          <AiOutlineCarryOut />
+          carry manager
+        </p>
+      </Title>
       <div className="my-auto">
         {router.pathname === "/" ? (
-          <div className="flex">
-            <button
-              className="flex items-center mr-12 p-1.5 rounded-md text-sm text-white bg-gray-600 transition hover:bg-blue-400 hover:border-blue-400 hover:transition active:bg-blue-200 active:border-blue-200"
+          <div className="flex items-center">
+            <Button
+              className="mr-12"
+              variant="light"
               onClick={headerState.clickAddEventForm}
             >
               <CgAddR />
               予定追加
-            </button>
-            <button
-              className="block text-xl hover:text-blue-500 hover:transition active:text-blue-200"
-              onClick={headerState.clickSideBar}
-            >
-              <GoThreeBars />
-            </button>
+            </Button>
+
+            <Burger
+              size="sm"
+              opened={opened}
+              onClick={() => setOpened((o) => !o)}
+            />
           </div>
         ) : null}
 
-        {headerSnap.sideBar ? (
-          <div className="absolute top-14 right-0 z-10 ">
-            <SideBar />
-          </div>
-        ) : null}
+        <Drawer
+          className="mt-11 "
+          classNames={{
+            overlay: "opacity-0",
+            noOverlay: "your-noOverlay-class",
+            drawer: "your-drawer-class",
+            header: "your-header-class",
+            title: "your-title-class",
+          }}
+          withCloseButton={false}
+          position="right"
+          padding="sm"
+          size="md"
+          opened={opened}
+          onClose={() => setOpened(false)}
+        >
+          <SideBar />
+        </Drawer>
       </div>
     </header>
   );

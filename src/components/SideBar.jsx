@@ -7,6 +7,8 @@ import Image from "next/image";
 import { headerState } from "src/stores/valtioState";
 import { useShowSideBar } from "src/hooks/useShowSideBar";
 import { useHandleSideBar } from "src/hooks/useHandleSideBar";
+import { Avatar, Button, Collapse } from "@mantine/core";
+import { MdOutlineKeyboardArrowUp } from "react-icons/md";
 
 const SideBar = () => {
   const { currentUserData, currentUserCompanyData, currentUserEventsData } =
@@ -22,29 +24,17 @@ const SideBar = () => {
   } = useHandleSideBar();
 
   return (
-    <div className="w-[416px] h-screen bg-white border-t-[0.5px] border-gray-500 border-b-[0.5px] border-l-[0.5px] ">
-      <button
-        onClick={headerState.clickSideBar}
-        className=" w-8 h-8 ml-2 text-2xl cursor-pointer rounded-full hover:bg-gray-200 hover:text-blue-500 hover:transition active:text-blue-200"
-      >
-        <p className="flex justify-center">
-          <IoCloseOutline />
-        </p>
-      </button>
-
-      <div className="w-full ml-auto flex  ">
+    <div>
+      <div className="m-2 flex">
         <div>
-          <Image
-            src="/kkrn_icon_user_1.png"
-            alt="user_icon"
-            height="70px"
-            width="70px"
-          />
+          <Avatar radius="xl" size="lg" />
         </div>
         {currentUserCompanyData && currentUserData ? (
           <ul className="my-auto ml-3">
             <li>{currentUserData?.user_name}</li>
-            <li>{currentUserCompanyData?.company_name}</li>
+            <li className="text-xs text-gray-500">
+              {currentUserCompanyData?.company_name}
+            </li>
           </ul>
         ) : (
           <div className="my-auto ml-3">
@@ -54,106 +44,121 @@ const SideBar = () => {
         )}
       </div>
       <hr />
-      <div className="m-3 ">
-        <div className="hover:text-blue-400 hover:transition active:transition-all">
-          <button
-            className="inline"
+      <div className="p-3 ">
+        <div>
+          <Button
+            variant="subtle"
+            color="dark"
+            compact
             onClick={handleClickSwitch}
             data-switch={"company"}
           >
-            {companySwitch ? "− 所属情報" : "+ 所属情報"}
-          </button>
-          <p className="inline"></p>
+            <MdOutlineKeyboardArrowUp
+              className={`${
+                companySwitch ? "transition -rotate-180" : null
+              } transition mr-2`}
+            />
+            所属情報
+          </Button>
         </div>
-
-        <ul
-          className={`overflow-hidden transition-all
-            ${companySwitch ? "h-32" : "h-0"}     
-          `}
-        >
-          <li>{currentUserCompanyData?.company_name}</li>
-          <li>{`〒${currentUserCompanyData?.zipcode}`}</li>
-          <li>{`${currentUserCompanyData?.address1}`}</li>
-          <li>{currentUserCompanyData?.address2}</li>
-          <li>{`TEL:${currentUserCompanyData?.phone_number}`}</li>
-        </ul>
+        <Collapse in={companySwitch}>
+          <ul>
+            <li>{currentUserCompanyData?.company_name}</li>
+            <li>{`〒${currentUserCompanyData?.zipcode}`}</li>
+            <li>{`${currentUserCompanyData?.address1}`}</li>
+            <li>{currentUserCompanyData?.address2}</li>
+            <li>{`TEL:${currentUserCompanyData?.phone_number}`}</li>
+          </ul>
+        </Collapse>
       </div>
+
       <hr />
-      <div className="m-3 ">
-        <div className="hover:text-blue-400 hover:transition">
-          <button
-            className="inline"
+
+      <div className="p-3 ">
+        <div>
+          <Button
+            variant="subtle"
+            color="dark"
+            compact
             onClick={handleClickSwitch}
             data-switch={"events"}
           >
-            {eventSwitch ? "− 今後の予定" : "+ 今後の予定"}
-          </button>
-          <p className="inline"></p>
+            <MdOutlineKeyboardArrowUp
+              className={`${
+                eventSwitch ? "transition -rotate-180" : null
+              } transition mr-2`}
+            />
+            今後の予定
+          </Button>
         </div>
-        <ul
-          className={` transition-all
+        <Collapse in={eventSwitch}>
+          <ul
+            className={` transition-all
             ${
               eventSwitch ? " h-48 overflow-scroll" : "h-0 overflow-hidden"
             }     
           `}
-        >
-          {currentUserEventsData?.map((event) => {
-            return (
-              <li
-                key={event.id}
-                className="flex justify-between rounded hover:bg-gray-100 hover:transition "
-              >
-                <div>
-                  <p className="inline">{event.date}</p>
-                  <p className="inline ml-2">{event.destination}</p>
-                </div>
-                {event.isConfirm ? (
-                  <div className="flex">
-                    <button
-                      className="mr-3 hover:text-blue-500 hover:transition active:text-blue-200"
-                      onClick={() => handleClickEdit(event)}
-                    >
-                      <AiOutlineEdit />
-                    </button>
-                    <p className="mr-2 text-xl  ">
-                      <AiOutlineCheck />
-                    </p>
-                  </div>
-                ) : (
+          >
+            {currentUserEventsData?.map((event) => {
+              return (
+                <li
+                  key={event.id}
+                  className="flex justify-between rounded hover:bg-gray-100 hover:transition "
+                >
                   <div>
-                    <button
-                      className="mr-3 hover:text-blue-500 hover:transition active:text-blue-200"
-                      onClick={() => handleClickEdit(event)}
-                    >
-                      <AiOutlineEdit />
-                    </button>
-                    <button
-                      className="mr-2 text-xl hover:text-blue-500 hover:transition active:text-blue-200"
-                      onClick={() =>
-                        handleClickDelete(
-                          event.id,
-                          event.date,
-                          event.destination
-                        )
-                      }
-                    >
-                      <FiDelete />
-                    </button>
+                    <p className="inline">{event.date}</p>
+                    <p className="inline ml-2">{event.destination}</p>
                   </div>
-                )}
-              </li>
-            );
-          })}
-        </ul>
+                  {event.isConfirm ? (
+                    <div className="flex">
+                      <button
+                        className="mr-3 hover:text-blue-500 hover:transition active:text-blue-200"
+                        onClick={() => handleClickEdit(event)}
+                      >
+                        <AiOutlineEdit />
+                      </button>
+                      <p className="mr-2 text-xl  ">
+                        <AiOutlineCheck />
+                      </p>
+                    </div>
+                  ) : (
+                    <div>
+                      <button
+                        className="mr-3 hover:text-blue-500 hover:transition active:text-blue-200"
+                        onClick={() => handleClickEdit(event)}
+                      >
+                        <AiOutlineEdit />
+                      </button>
+                      <button
+                        className="mr-2 text-xl hover:text-blue-500 hover:transition active:text-blue-200"
+                        onClick={() =>
+                          handleClickDelete(
+                            event.id,
+                            event.date,
+                            event.destination
+                          )
+                        }
+                      >
+                        <FiDelete />
+                      </button>
+                    </div>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </Collapse>
       </div>
       <hr />
-      <div className="m-3">
-        <button
-          className="hover:text-blue-500 hover:transition active:text-blue-200"
+      <div className="p-3">
+        <Button
+          variant="subtle"
+          color="red"
+          compact
           onClick={handleClickSignOut}
         >
           ログアウト
-        </button>
+        </Button>
       </div>
     </div>
   );

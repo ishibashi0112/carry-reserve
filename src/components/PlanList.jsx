@@ -5,6 +5,7 @@ import EventList from "src/components/EventList";
 import Map from "src/components/Map";
 import DndArea from "src/components/DndArea";
 import RouteList from "src/components/RouteList";
+import { FloatingTooltip, Overlay } from "@mantine/core";
 
 const PlanList = () => {
   const eventsSnap = useSnapshot(eventsState);
@@ -25,13 +26,27 @@ const PlanList = () => {
   }
 
   return (
-    <div className="w-full">
-      <div className={`${mapSnap.show ? "flex" : null}`}>
-        {routeListSnap.switching === "保存" ? <Map /> : null}
-        {routeListSnap.switching === "保存" ? <RouteList /> : null}
-      </div>
+    <div className="w-full h-full bg-white rounded-md z-0">
+      {routeListSnap.switching === "保存" ? (
+        <div className="p-2">
+          <div className={`${mapSnap.show ? "flex" : null} `}>
+            <Map />
+            <RouteList />
+          </div>
+          <DndArea />
 
-      {routeListSnap.switching === "保存" ? <DndArea /> : null}
+          <FloatingTooltip
+            className="absolute top-0 left-0 z-[-1]"
+            label="編集中は他の操作ができません"
+          >
+            <Overlay
+              className="w-screen  h-screen absolute top-0 left-0"
+              opacity={0.6}
+              color="#000"
+            />
+          </FloatingTooltip>
+        </div>
+      ) : null}
 
       {isConfirm ? (
         <div className={`${mapSnap.show ? "flex" : null}`}>
@@ -39,33 +54,10 @@ const PlanList = () => {
           <RouteList />
         </div>
       ) : null}
+
       {routeListSnap.switching === "編集" ? <EventList /> : null}
     </div>
   );
 };
 
 export default PlanList;
-
-// if (switchSnap === "編集") {
-//   return (
-//     <div className="w-full">
-//       {console.log("1")}
-//       <Map />
-//       <EventList />
-//     </div>
-//   );
-// }
-
-// if (switchSnap === "保存") {
-//   return (
-//     <div className="w-full">
-//       {console.log("2")}
-//       <div className={`${mapSnap.show ? "flex" : null}`}>
-//         <Map />
-//         <RouteList />
-//       </div>
-
-//       <DndArea />
-//     </div>
-//   );
-// }

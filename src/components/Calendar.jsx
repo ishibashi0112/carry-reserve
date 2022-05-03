@@ -168,7 +168,7 @@ const Calendar = () => {
   }, []);
 
   return (
-    <div className="w-[700px] resize-x overflow-scroll  h-[650px] p-6 mx-4 border-[0.5px] border-gray-500 ">
+    <div className="w-[700px] resize-x overflow-scroll  h-[650px] p-6 my-2 mx-4 shadow-md border-[0.5px] rounded-md border-gray-500 ">
       <div className="w-[700px] h-[600px] ">
         <FullCalendar
           height={"100%"}

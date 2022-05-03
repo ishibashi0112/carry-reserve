@@ -15,7 +15,7 @@ const Home = () => {
 
       <Header />
 
-      <div className="flex w-full h-[700px]">
+      <div className="flex w-full h-[calc(100vh-44px)]">
         <Calendar />
         <List />
       </div>
