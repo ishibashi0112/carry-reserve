@@ -1,11 +1,11 @@
 import React, { useCallback, useState } from "react";
 import { useSnapshot } from "valtio";
 import { eventsState } from "src/stores/valtioState";
-import Buttons from "src/components/Buttons";
+import { Buttons } from "src/components/Buttons";
 import { AiOutlineBars } from "react-icons/ai";
 import { Avatar, Badge, Button, Collapse, Table } from "@mantine/core";
 
-const EventList = () => {
+export const EventList = () => {
   const eventsSnap = useSnapshot(eventsState);
   const [eventListOpenState, setEventListOpenState] = useState({
     isOpened: false,
@@ -61,6 +61,7 @@ const EventList = () => {
                       leftSection: "mr-[2px]",
                     }}
                     variant="outline"
+                    color={"dark"}
                     fullWidth
                     leftSection={
                       <Avatar
@@ -105,5 +106,3 @@ const EventList = () => {
     </div>
   );
 };
-
-export default EventList;

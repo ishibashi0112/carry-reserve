@@ -1,16 +1,16 @@
 import React from "react";
 import { useSnapshot } from "valtio";
-import { eventsState, mapState, routeListState } from "src/stores/valtioState";
-import EventList from "src/components/EventList";
+import { eventsState, mapState, listState } from "src/stores/valtioState";
+import { EventList } from "src/components/EventList";
 import Map from "src/components/Map";
-import DndArea from "src/components/DndArea";
-import RouteList from "src/components/RouteList";
+import { DndArea } from "src/components/DndArea";
+import { RouteList } from "src/components/RouteList";
 import { FloatingTooltip, Overlay } from "@mantine/core";
 
-const PlanList = () => {
+export const PlanList = () => {
   const eventsSnap = useSnapshot(eventsState);
   const dateEventsLength = eventsSnap.dateEvents.length;
-  const routeListSnap = useSnapshot(routeListState);
+  const listSnap = useSnapshot(listState);
   const mapSnap = useSnapshot(mapState);
 
   const isConfirm = eventsSnap.dateEvents[0]
@@ -25,9 +25,21 @@ const PlanList = () => {
     );
   }
 
-  return (
-    <div className="w-full h-full bg-white rounded-md z-0">
-      {routeListSnap.switching === "保存" ? (
+  if (isConfirm) {
+    return (
+      <div className="w-full h-full bg-white rounded-md">
+        <div className={`${mapSnap.show ? "flex" : null}`}>
+          <Map />
+          <RouteList />
+        </div>
+        <EventList />
+      </div>
+    );
+  }
+
+  if (listSnap.editMode) {
+    return (
+      <div className="w-full h-full rounded-md bg-white">
         <div className="p-2">
           <div className={`${mapSnap.show ? "flex" : null} `}>
             <Map />
@@ -46,18 +58,13 @@ const PlanList = () => {
             />
           </FloatingTooltip>
         </div>
-      ) : null}
+      </div>
+    );
+  }
 
-      {isConfirm ? (
-        <div className={`${mapSnap.show ? "flex" : null}`}>
-          <Map />
-          <RouteList />
-        </div>
-      ) : null}
-
-      {routeListSnap.switching === "編集" ? <EventList /> : null}
+  return (
+    <div className="w-full h-full bg-white rounded-md">
+      <EventList />
     </div>
   );
 };
-
-export default PlanList;

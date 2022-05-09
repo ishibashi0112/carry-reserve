@@ -1,236 +1,514 @@
-import React, { useState } from "react";
-import { useForm } from "react-hook-form";
+import React, { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { singUpAuth, signInAuth } from "src/firebase/firebaseAuth";
 import { auth, db } from "src/firebase/firebase";
 import { addDoc, collection } from "@firebase/firestore";
-import StepFormBar from "src/components/StepFormBar";
+import {
+  Button,
+  Collapse,
+  LoadingOverlay,
+  NativeSelect,
+  PasswordInput,
+  Popover,
+  Select,
+  Stepper,
+  TextInput,
+  Title,
+} from "@mantine/core";
+import { CheckPasswordSafety } from "src/components/CheckPasswordSafety";
+import { useForm } from "@mantine/form";
+import {
+  emailValidate,
+  emptyValidate,
+  passwordCheckValidate,
+  passwordValidate,
+  zipcodeValidate,
+} from "src/utils/validate";
+import useSWRImmutable from "swr/immutable";
+import { fetcher } from "src/firebase/fetcher";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 
-const Auth = () => {
+const createSelectData = (companies) => {
+  const companiesData = companies.map((company) => ({
+    value: company.id,
+    label: company.company_name,
+    group: "下記より選択してください",
+  }));
+  return [
+    {
+      value: "その他",
+      label: "その他",
+      group: "未登録の場合は、入力が必要です",
+    },
+    ...companiesData,
+  ];
+};
+
+export const Auth = () => {
   const router = useRouter();
-  const { register, handleSubmit, reset } = useForm({
-    criteriaMode: "all",
+  const [stepActive, setStepActive] = useState(0);
+  const [popoverOpened, setPopoverOpened] = useState(false);
+  const [passwordValue, setPasswordValue] = useState("");
+  const [isCompanyFormOpened, setIsCompanyFormOpened] = useState(false);
+
+  const { data: companies, error } = useSWRImmutable("companies", fetcher);
+  const companiesSelectData = companies ? createSelectData(companies) : [];
+
+  const signInForm = useForm({
+    initialValues: {
+      email: "",
+      password: "",
+    },
+    validate: {
+      email: emailValidate,
+      password: emptyValidate,
+    },
   });
 
-  const onSubmitSignUp = async (data) => {
-    console.log(data);
-    singUpAuth(data.email, data.password);
-    setCurrentForm("User_Data");
-  };
+  const userForm = useForm({
+    initialValues: {
+      email: "",
+      password: "",
+      password_check: "",
+      organization: "",
+      user_name: "",
+      company: "",
+    },
+    validate: {
+      email: emailValidate,
+      password: passwordValidate,
+      password_check: passwordCheckValidate,
+      organization: emptyValidate,
+      user_name: emptyValidate,
+      company: emptyValidate,
+    },
+  });
 
-  const onSubmitUserEntry = async (data) => {
-    const companyData = await addDoc(collection(db, "companies"), {
-      company_name: data.company_name,
-      zipcode: data.zipcode,
-      address1: data.address1,
-      address2: data.address2,
-      phone_number: data.phone_number,
-    });
+  const companyForm = useForm({
+    initialValues: {
+      company_name: "",
+      zipcode: "",
+      address1: "",
+      address2: "",
+      phone_number: "",
+    },
+    validate: {
+      company_name: emptyValidate,
+      zipcode: zipcodeValidate,
+      address1: emptyValidate,
+      phone_number: emptyValidate,
+    },
+  });
 
-    const userData = await addDoc(collection(db, "users"), {
-      user_id: auth.currentUser.uid,
-      organization: data.organization,
-      user_name: data.user_name,
-      company_id: companyData.id,
-    });
-    router.push("/");
-  };
+  const handleOnChangePasswordValue = useCallback((e) => {
+    setPasswordValue(e.currentTarget.value);
+  }, []);
 
-  const onSubmitSignIn = async (data) => {
-    console.log(data);
-    signInAuth(data.email, data.password);
-    router.push("/");
-  };
+  const handleClickNextFormStep = useCallback(() => {
+    const emailError = userForm.validateField("email");
+    const passwordError = userForm.validateField("password");
+    const passwordCheckError = userForm.validateField("password_check");
 
-  const [currentForm, setCurrentForm] = useState("Email_Password");
-  const steps = ["Email_Password", "User_Data"];
+    if (
+      !emailError.hasError &&
+      !passwordError.hasError &&
+      !passwordCheckError.hasError
+    ) {
+      setStepActive(1);
+    }
+  }, [userForm]);
 
-  console.log(currentForm);
+  const handleClickCheckStep = useCallback(() => {
+    const userFormValidate = userForm.validate();
+    const companyValue = userForm.values.company;
+    //userFormのバリーデーションエラーを検知
+    if (userFormValidate.hasErrors) {
+      return;
+    }
+    //companyFormの入力有無を検知、なければ確認ステップへ
+    if (companyValue !== "その他") {
+      setStepActive(2);
+      return;
+    }
+    //companyFormのバリーデーションエラーを検知、なければ確認ステップへ
+    const companyFormValidate = companyForm.validate();
+    if (companyFormValidate.hasErrors) {
+      return;
+    }
+    setStepActive(2);
+    return;
+  }, [userForm, companyForm]);
 
-  return (
-    <div className="w-1/3 mx-auto mt-[50px] bg-white">
-      {router.pathname === "/auth/signUp" ? (
-        <div>
-          <h1 className="text-4xl text-center">SignUp</h1>
-          <StepFormBar steps={steps} currentForm={currentForm} />
-        </div>
-      ) : (
-        <h1 className="text-4xl text-center">SignIn</h1>
-      )}
+  const handleClickBackStep = useCallback(() => {
+    setStepActive((prev) => Number(prev) - 1);
+  }, []);
 
-      {router.pathname === "/auth/signUp" ? (
-        currentForm === "Email_Password" ? (
-          <form className="mt-7" onSubmit={handleSubmit(onSubmitSignUp)}>
-            <div className="flex flex-col gap-3">
-              <label className="block">
-                email
-                <p className="ml-1 inline text-sm text-red-600">※</p>
-                <input
-                  type="text"
-                  className="w-full block border border-gray-400 rounded outline-none text-lg hover:border-2 caret-blue-300  hover:border-gray-500 focus:border-2 focus:border-blue-300"
-                  {...register("email", { required: true })}
-                />
-              </label>
+  const handleOnChangeSelect = useCallback((value) => {
+    if (value === "その他") {
+      setIsCompanyFormOpened(true);
+    }
+    if (value !== "その他") {
+      setIsCompanyFormOpened(false);
+      companyForm.reset();
+    }
+  }, []);
 
-              <label className="block">
-                password
-                <p className="ml-1 inline text-sm text-red-600">※</p>
-                <input
-                  type="text"
-                  className="w-full block border border-gray-400 rounded outline-none text-lg hover:border-2 caret-blue-300  hover:border-gray-500 focus:border-2 focus:border-blue-300"
-                  {...register("password")}
-                />
-              </label>
-              <input
-                type="submit"
-                className="block w-full font-bold  bg-white border-2 rounded-md  hover:bg-blue-200 active:bg-blue-400 "
-                value="submit/next"
-              />
-            </div>
-          </form>
-        ) : (
-          <form className="mt-7" onSubmit={handleSubmit(onSubmitUserEntry)}>
-            <div className="flex flex-col gap-3">
-              <label className="block ">
-                organization
-                <p className="ml-1 inline text-sm text-red-600">※</p>
-                <select
-                  className="w-full block border-b outline-none text-lg hover:border-b-2 caret-blue-300  hover:border-gray-500 focus:border-b-2 focus:border-blue-300"
-                  {...register("organization", { required: true })}
-                >
-                  <option value="指定無し" selected>
-                    指定無し
-                  </option>
-                  <option value="自社">自社</option>
-                  <option value="サプライヤー">サプライヤー</option>
-                  <option value="ドライバー">ドライバー</option>
-                </select>
-              </label>
+  const [isLoading, setIsLoading] = useState(false);
+  const onSubmitSignIn = useCallback(
+    async (value) => {
+      setIsLoading(true);
+      try {
+        await signInWithEmailAndPassword(auth, value.email, value.password);
+        router.push("/");
+      } catch (error) {
+        signInForm.setErrors({
+          email:
+            error.message === "Firebase: Error (auth/user-not-found)."
+              ? "emailに誤りがあります"
+              : "",
+          password:
+            error.message === "Firebase: Error (auth/wrong-password)."
+              ? "passwordに誤りがあります"
+              : "",
+        });
+        console.log(error.message);
+        alert(error.message);
+        setIsLoading(false);
+      }
+    },
+    [router, signInForm]
+  );
 
-              <label className="block">
-                user_name
-                <p className="ml-1 inline text-sm text-red-600">※</p>
-                <input
-                  type="text"
-                  className="w-full block border border-gray-400 rounded outline-none text-lg hover:border-2 caret-blue-300  hover:border-gray-500 focus:border-2 focus:border-blue-300"
-                  {...register("user_name", { required: true })}
-                />
-              </label>
+  const handleOnSubmitSignUp = useCallback(
+    async (e) => {
+      e.preventDefault();
+      setIsLoading(true);
+      const userValues = userForm.values;
+      const companyValues = companyForm.values;
+      const companyValue = userForm.values.company;
 
-              <label className="block">
-                company_name
-                <p className="ml-1 inline text-sm text-red-600">※</p>
-                <input
-                  type="text"
-                  className="w-full block border border-gray-400 rounded outline-none text-lg hover:border-2 caret-blue-300  hover:border-gray-500 focus:border-2 focus:border-blue-300"
-                  {...register("company_name", { required: true })}
-                />
-              </label>
+      try {
+        const user = await createUserWithEmailAndPassword(
+          auth,
+          userValues.email,
+          userValues.password
+        );
 
-              <div className="max-h-[235px] flex flex-col gap-3 mb-4 ml-4 border-l">
-                <div className="flex ">
-                  <p className=" flex-grow-0 text-gray-200 pt-6">ー</p>
-                  <label className=" block flex-grow ">
-                    zipcode
-                    <p className="ml-1  flex-1 inline text-sm text-red-600">
-                      ※
-                    </p>
-                    <input
-                      type="text"
-                      className="w-full block border border-gray-400 rounded outline-none text-lg hover:border-2 caret-blue-300  hover:border-gray-500 focus:border-2 focus:border-blue-300"
-                      {...register("zipcode", { required: true })}
-                    />
-                  </label>
-                </div>
-                <div className="flex ">
-                  <p className="flex-grow-0 text-gray-200 pt-6">ー</p>
-                  <label className="block flex-grow">
-                    address1
-                    <p className="ml-1 inline text-sm text-red-600">※</p>
-                    <input
-                      type="text"
-                      className="w-full block border border-gray-400 rounded outline-none text-lg hover:border-2 caret-blue-300  hover:border-gray-500 focus:border-2 focus:border-blue-300"
-                      {...register("address1", { required: true })}
-                    />
-                  </label>
-                </div>
-                <div className="flex">
-                  <p className="flex-grow-0 text-gray-200 pt-6">ー</p>
-                  <label className="block flex-grow">
-                    address2
-                    <p className="ml-1 inline text-sm text-red-600">※</p>
-                    <input
-                      type="text"
-                      className="w-full block border border-gray-400 rounded outline-none text-lg hover:border-2 caret-blue-300  hover:border-gray-500 focus:border-2 focus:border-blue-300"
-                      {...register("address2", { required: true })}
-                    />
-                  </label>
-                </div>
-                <div className="flex">
-                  <p className=" text-gray-200 pt-6">ー</p>
-                  <label className="block flex-grow">
-                    phone_number
-                    <p className="ml-1 inline text-sm text-red-600">※</p>
-                    <input
-                      type="text"
-                      className="w-full block border border-gray-400 rounded outline-none text-lg hover:border-2 caret-blue-300  hover:border-gray-500 focus:border-2 focus:border-blue-300"
-                      {...register("phone_number", { required: true })}
-                    />
-                  </label>
-                </div>
-              </div>
+        const addDocUserObj = {
+          user_id: user.user.uid,
+          organization: userValues.organization,
+          user_name: userValues.user_name,
+          company_id: userValues.company,
+        };
 
-              <input
-                type="submit"
-                className="block w-full font-bold  bg-white border-2 rounded-md  hover:bg-blue-200 active:bg-blue-400 "
-                value="submit"
-              />
-            </div>
-          </form>
-        )
-      ) : (
-        <form className="mt-8 " onSubmit={handleSubmit(onSubmitSignIn)}>
+        if (companyValue !== "その他") {
+          await addDoc(collection(db, "users"), addDocUserObj);
+          router.push("/");
+          return;
+        }
+
+        const companyData = await addDoc(
+          collection(db, "companies"),
+          companyValues
+        );
+
+        await addDoc(collection(db, "users"), {
+          ...addDocUserObj,
+          company_id: companyData.id,
+        });
+
+        router.push("/");
+      } catch (error) {
+        alert(error);
+        setIsLoading(false);
+      }
+    },
+    [userForm, companyForm, router]
+  );
+
+  if (router.pathname === "/auth/signIn") {
+    return (
+      <div className=" min-w-[300px] w-1/2 max-w-[500px] mx-auto mt-[50px] border shadow-md rounded-md  bg-white relative">
+        <Title className="text-center p-4" order={2}>
+          SignIn
+        </Title>
+
+        <form
+          className="py-4 px-5"
+          onSubmit={signInForm.onSubmit(onSubmitSignIn)}
+        >
           <div className="flex flex-col gap-3">
-            <label className="block">
-              email
-              <p className="ml-1 inline text-sm text-red-600">※</p>
-              <input
-                type="text"
-                className="w-full block border border-gray-400 rounded outline-none text-lg hover:border-2 caret-blue-300  hover:border-gray-500 focus:border-2 focus:border-blue-300"
-                {...register("email", { required: true })}
-              />
-            </label>
-            <label className="block">
-              password
-              <p className="ml-1 inline text-sm text-red-600">※</p>
-              <input
-                type="text"
-                className="w-full block border border-gray-400 rounded outline-none text-lg hover:border-2 caret-blue-300  hover:border-gray-500 focus:border-2 focus:border-blue-300"
-                {...register("password")}
-              />
-            </label>
-            <input
-              type="submit"
-              className="block w-full font-bold delay-100 bg-white border-2 rounded-md  hover:bg-blue-200 active:bg-blue-400 "
+            <TextInput
+              label="Email"
+              placeholder="email address"
+              {...signInForm.getInputProps("email")}
             />
-          </div>
-          <div className="flex justify-between mt-2">
-            <Link href="/auth/signUp">
-              {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-              <a className="block text-sm hover:text-blue-300 ">
-                パスワードを忘れた場合はこちら
-              </a>
-            </Link>
-            <Link href="/auth/signUp">
-              {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-              <a className="block text-sm hover:text-blue-300 ">サインアップ</a>
-            </Link>
+
+            <PasswordInput
+              label="Password"
+              placeholder="Password"
+              {...signInForm.getInputProps("password")}
+            />
+
+            <Button className="mt-3" type="submit">
+              送信
+            </Button>
           </div>
         </form>
-      )}
+        <div className="flex justify-between p-2 mt-2">
+          <Link href="/auth/signUp">
+            {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+            <a>
+              <Button variant="subtle" color="gray" size="xs" compact>
+                パスワードを忘れた場合はこちら
+              </Button>
+            </a>
+          </Link>
+          <Link href="/auth/signUp">
+            {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+            <a>
+              <Button variant="subtle" size="sm" compact>
+                signUp
+              </Button>
+            </a>
+          </Link>
+        </div>
+        <LoadingOverlay visible={isLoading} />
+      </div>
+    );
+  }
+
+  //signUp時
+  return (
+    <div className=" min-w-[300px] w-1/2 max-w-[700px] mx-auto mt-[50px] border shadow-md rounded-md  bg-white relative">
+      <Title className="text-center p-4" order={2}>
+        SignUp
+      </Title>
+      <form onSubmit={handleOnSubmitSignUp}>
+        <Stepper className="p-4" size="sm" active={stepActive} breakpoint={900}>
+          <Stepper.Step
+            label="Email Password"
+            description="SignIn時のEmail Passwordを登録"
+          >
+            <div className="flex flex-col gap-3">
+              <TextInput
+                label="Email"
+                placeholder="email address"
+                {...userForm.getInputProps("email")}
+              />
+
+              <Popover
+                opened={popoverOpened}
+                position="bottom"
+                placement="start"
+                trapFocus={false}
+                onFocusCapture={() => setPopoverOpened(true)}
+                onBlurCapture={() => setPopoverOpened(false)}
+                target={
+                  <PasswordInput
+                    label="Password"
+                    placeholder="Password"
+                    {...userForm.getInputProps("password")}
+                    onChange={(value) => {
+                      userForm.getInputProps("password").onChange(value);
+                      handleOnChangePasswordValue(value);
+                    }}
+                  />
+                }
+              >
+                <CheckPasswordSafety value={passwordValue} />
+              </Popover>
+
+              <PasswordInput
+                label="Password(check)"
+                placeholder="Input your password again"
+                {...userForm.getInputProps("password_check")}
+              />
+
+              <Button
+                className="mt-3"
+                type="button"
+                onClick={handleClickNextFormStep}
+              >
+                Next step
+              </Button>
+            </div>
+          </Stepper.Step>
+          <Stepper.Step label="User Data" description="User情報の登録">
+            <div className="flex flex-col gap-3">
+              <Select
+                data={["自社", "サプライヤー", "ドライバー"]}
+                label="organization"
+                placeholder="Pick one"
+                {...userForm.getInputProps("organization")}
+              />
+              <TextInput
+                label="user_name"
+                placeholder="user name"
+                {...userForm.getInputProps("user_name")}
+              />
+
+              <Select
+                label="company"
+                data={companiesSelectData}
+                description="※既に登録の会社情報を引用できます"
+                placeholder="Pick company"
+                searchable
+                clearable
+                nothingFound="No options"
+                {...userForm.getInputProps("company")}
+                onChange={(value) => {
+                  userForm.getInputProps("company").onChange(value);
+                  handleOnChangeSelect(value);
+                }}
+              />
+
+              <Collapse in={isCompanyFormOpened}>
+                <TextInput
+                  label="company_name"
+                  placeholder="company name"
+                  {...companyForm.getInputProps("company_name")}
+                />
+
+                <TextInput
+                  label=" zipcode"
+                  placeholder=" zipcode"
+                  description="※ハイフン(-)は不要です"
+                  {...companyForm.getInputProps("zipcode")}
+                />
+
+                <TextInput
+                  label=" address1"
+                  placeholder=" 都道府県 市町村 番地"
+                  description="※都道府県 市町村 番地まで"
+                  {...companyForm.getInputProps("address1")}
+                />
+
+                <TextInput
+                  label=" address2"
+                  placeholder="建物名 部屋番号 その他"
+                  description="※番地以下の住所（建物名 部屋番号）"
+                  {...companyForm.getInputProps("address2")}
+                />
+
+                <TextInput
+                  label=" phone_number"
+                  placeholder=" phone number"
+                  description="※ハイフン(-)は不要です"
+                  {...companyForm.getInputProps("phone_number")}
+                />
+              </Collapse>
+
+              <Button
+                className="mt-3"
+                type="button"
+                onClick={handleClickCheckStep}
+              >
+                Next step
+              </Button>
+
+              <Button
+                className="mt-3"
+                color={"gray"}
+                type="button"
+                onClick={handleClickBackStep}
+              >
+                Back
+              </Button>
+            </div>
+          </Stepper.Step>
+          <Stepper.Step label="Check" description="入力内容の確認">
+            <div className="flex flex-col gap-3">
+              <TextInput
+                label="Email"
+                readOnly
+                value={userForm.getInputProps("email").value}
+              />
+              <PasswordInput
+                label="Password"
+                readOnly
+                value={userForm.getInputProps("password").value}
+              />
+
+              <Select
+                data={["自社", "サプライヤー", "ドライバー"]}
+                label="organization"
+                readOnly
+                value={userForm.getInputProps("organization").value}
+              />
+              <TextInput
+                label="user_name"
+                readOnly
+                value={userForm.getInputProps("user_name").value}
+              />
+
+              <Select
+                label="company"
+                data={companiesSelectData}
+                readOnly
+                value={userForm.getInputProps("company").value}
+              />
+              {userForm.values.company === "その他" ? (
+                <>
+                  <TextInput
+                    label="company_name"
+                    readOnly
+                    value={companyForm.getInputProps("company_name").value}
+                  />
+
+                  <TextInput
+                    label=" zipcode"
+                    readOnly
+                    value={companyForm.getInputProps("zipcode").value}
+                  />
+
+                  <TextInput
+                    label=" address1"
+                    description="※都道府県 市町村 番地まで"
+                    readOnly
+                    value={companyForm.getInputProps("address1").value}
+                  />
+
+                  <TextInput
+                    label=" address2"
+                    description="※番地以下の住所（建物名 部屋番号）"
+                    readOnly
+                    value={companyForm.getInputProps("address2").value}
+                  />
+
+                  <TextInput
+                    label=" phone_number"
+                    readOnly
+                    value={companyForm.getInputProps("phone_number").value}
+                  />
+                </>
+              ) : null}
+
+              <p className="text-sm font-bold text-red-600">
+                内容がよろしければ、sunmitボタンをクリックしてください。
+              </p>
+
+              <Button className="mt-3" type="submit">
+                Submit
+              </Button>
+
+              <Button
+                className="mt-3"
+                color={"gray"}
+                type="button"
+                onClick={handleClickBackStep}
+              >
+                Back
+              </Button>
+            </div>
+          </Stepper.Step>
+        </Stepper>
+      </form>
+
+      <LoadingOverlay visible={isLoading} />
     </div>
   );
 };
-
-export default Auth;

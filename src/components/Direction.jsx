@@ -23,7 +23,7 @@ const Direction = () => {
 
   let count = useRef(0);
   const directionsCallback = (res) => {
-    console.log(res, count);
+    // console.log(res, count);
 
     if (res !== null && count.current < 1) {
       if (res.status === "OK") {

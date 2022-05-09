@@ -1,4 +1,5 @@
 module.exports = {
+  // parser: "babel-eslint",
   env: {
     browser: true,
     es2021: true,
@@ -9,6 +10,7 @@ module.exports = {
     "plugin:jsx-a11y/recommended",
     "prettier",
   ],
+
   parserOptions: {
     ecmaFeatures: {
       jsx: true,

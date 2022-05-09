@@ -3,7 +3,7 @@ import { signOutAuth } from "src/firebase/firebaseAuth";
 import { deleteSelectToast } from "src/hooks/useCustomToast";
 import { editSelectToast } from "src/hooks/useCustomToast";
 import { promiseToast } from "src/hooks/useCustomToast";
-import { headerState } from "src/stores/valtioState";
+import { sideBarState } from "src/stores/valtioState";
 
 export const useHandleSideBar = () => {
   const [companySwitch, setCompanySwitch] = useState(false);
@@ -31,7 +31,7 @@ export const useHandleSideBar = () => {
   };
 
   const handleClickSignOut = () => {
-    headerState.sideBar = false;
+    sideBarState.sideBar = false;
     promiseToast(signOutAuth(), "ログアウト");
   };
 

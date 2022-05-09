@@ -1,14 +1,15 @@
 import React from "react";
 import { AiOutlineCheck } from "react-icons/ai";
 import { AiOutlineEdit } from "react-icons/ai";
-import { IoCloseOutline } from "react-icons/io5";
 import { FiDelete } from "react-icons/fi";
-import Image from "next/image";
-import { headerState } from "src/stores/valtioState";
 import { useShowSideBar } from "src/hooks/useShowSideBar";
 import { useHandleSideBar } from "src/hooks/useHandleSideBar";
 import { Avatar, Button, Collapse } from "@mantine/core";
 import { MdOutlineKeyboardArrowUp } from "react-icons/md";
+import dayjs from "dayjs";
+import "dayjs/locale/ja";
+
+dayjs.locale("ja");
 
 const SideBar = () => {
   const { currentUserData, currentUserCompanyData, currentUserEventsData } =
@@ -93,44 +94,51 @@ const SideBar = () => {
         </div>
         <Collapse in={eventSwitch}>
           <ul
-            className={` transition-all
-            ${
-              eventSwitch ? " h-48 overflow-scroll" : "h-0 overflow-hidden"
-            }     
-          `}
+          //   className={` transition-all
+          //   ${
+          //     eventSwitch ? " h-48 overflow-scroll" : "h-0 overflow-hidden"
+          //   }
+          // `}
           >
             {currentUserEventsData?.map((event) => {
               return (
                 <li
                   key={event.id}
-                  className="flex justify-between rounded hover:bg-gray-100 hover:transition "
+                  className="flex justify-between rounded px-1 hover:bg-gray-100 hover:transition "
                 >
-                  <div>
-                    <p className="inline">{event.date}</p>
-                    <p className="inline ml-2">{event.destination}</p>
+                  <div className="flex">
+                    <p className="w-20">
+                      {dayjs(event.date).format("M/D(ddd)")}
+                    </p>
+                    <p className="w-28 truncate">{event.destination}</p>
                   </div>
                   {event.isConfirm ? (
                     <div className="flex">
-                      <button
-                        className="mr-3 hover:text-blue-500 hover:transition active:text-blue-200"
+                      <Button
+                        compact
+                        variant="subtle"
                         onClick={() => handleClickEdit(event)}
                       >
                         <AiOutlineEdit />
-                      </button>
-                      <p className="mr-2 text-xl  ">
-                        <AiOutlineCheck />
+                      </Button>
+
+                      <p className="flex items-center text-xl px-2 border border-opacity-0  text-green-500  ">
+                        <AiOutlineCheck size={14} />
                       </p>
                     </div>
                   ) : (
                     <div>
-                      <button
-                        className="mr-3 hover:text-blue-500 hover:transition active:text-blue-200"
+                      <Button
+                        compact
+                        variant="subtle"
                         onClick={() => handleClickEdit(event)}
                       >
                         <AiOutlineEdit />
-                      </button>
-                      <button
-                        className="mr-2 text-xl hover:text-blue-500 hover:transition active:text-blue-200"
+                      </Button>
+                      <Button
+                        compact
+                        variant="subtle"
+                        color="red"
                         onClick={() =>
                           handleClickDelete(
                             event.id,
@@ -140,7 +148,7 @@ const SideBar = () => {
                         }
                       >
                         <FiDelete />
-                      </button>
+                      </Button>
                     </div>
                   )}
                 </li>

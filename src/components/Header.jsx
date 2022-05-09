@@ -1,20 +1,24 @@
-import React, { useState } from "react";
-import { GoThreeBars } from "react-icons/go";
+import React, { useCallback, useState } from "react";
 import { CgAddR } from "react-icons/cg";
 import { useRouter } from "next/router";
 import SideBar from "src/components/SideBar";
-import { useSnapshot } from "valtio";
-import { headerState } from "src/stores/valtioState";
+import { listState, sideBarState } from "src/stores/valtioState";
 import { Burger, Button, Drawer, Title } from "@mantine/core";
 import { AiOutlineCarryOut } from "react-icons/ai";
+import { MdOutlineDirectionsCarFilled } from "react-icons/md";
+import { useSnapshot } from "valtio";
 
-const Header = () => {
+export const Header = () => {
   const router = useRouter();
-  const headerSnap = useSnapshot(headerState);
   const [opened, setOpened] = useState(false);
+  const listSnap = useSnapshot(listState);
+
+  const handleClickProgress = () => {
+    listState.isProgressOpened = listState.isProgressOpened ? false : true;
+  };
 
   return (
-    <header className="h-11 flex justify-between px-8 bg-gray-100 relative">
+    <header className="h-11 flex justify-between px-8 bg-white relative">
       <Title className="my-auto" order={2}>
         <p className="flex items-center">
           <AiOutlineCarryOut />
@@ -26,8 +30,18 @@ const Header = () => {
           <div className="flex items-center">
             <Button
               className="mr-12"
-              variant="light"
-              onClick={headerState.clickAddEventForm}
+              variant="subtle"
+              compact
+              onClick={handleClickProgress}
+            >
+              <MdOutlineDirectionsCarFilled />
+              進捗管理
+            </Button>
+            <Button
+              className="mr-12"
+              variant="subtle"
+              compact
+              onClick={sideBarState.clickEventForm}
             >
               <CgAddR />
               予定追加
@@ -63,5 +77,3 @@ const Header = () => {
     </header>
   );
 };
-
-export default Header;
