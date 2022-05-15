@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { BsCheckLg } from "react-icons/bs";
+import { BsCheckLg, BsPinMap } from "react-icons/bs";
 import { GrUpdate } from "react-icons/gr";
 import { useSnapshot } from "valtio";
 import { eventsState, mapState, listState } from "src/stores/valtioState";
@@ -16,6 +16,7 @@ import {
 } from "firebase/firestore";
 import { sortEventsByRouteOrder } from "src/components/Calendar";
 import { auth, db } from "src/firebase/firebase";
+import { AiOutlineHome } from "react-icons/ai";
 
 export const Buttons = (props) => {
   const events = props.events;
@@ -181,9 +182,9 @@ export const Buttons = (props) => {
 
   if (!listSnap.editMode) {
     return (
-      <div className="flex mt-3">
+      <div className="ml-auto mt-3 mr-4">
         <Button
-          className="m-1"
+          className="px-7"
           variant="light"
           color="dark"
           compact
@@ -196,61 +197,63 @@ export const Buttons = (props) => {
   }
 
   return (
-    <div>
-      <div className="flex justify-between mt-3 mx-4">
-        <div className="flex">
-          <Button
-            className="m-1"
-            variant="light"
-            color="dark"
-            compact
-            onClick={handleClickBack}
-          >
-            戻る
-          </Button>
+    <div className="flex justify-start  mt-3 mx-4">
+      <div className="flex  mr-auto">
+        <Button
+          className="m-1"
+          variant="light"
+          color="dark"
+          compact
+          onClick={handleClickBack}
+        >
+          戻る
+        </Button>
 
-          <Button
-            className="m-1"
-            variant="light"
-            color="dark"
-            compact
-            onClick={handleClickAddHome}
-          >
-            自社追加
-          </Button>
+        <Button
+          className="m-1"
+          variant="light"
+          color="dark"
+          compact
+          onClick={handleClickAddHome}
+        >
+          <AiOutlineHome />
+          <p className="hidden sm:inline">自社追加 </p>
+        </Button>
 
-          <Button
-            className="m-1"
-            variant="light"
-            color="dark"
-            compact
-            onClick={handleclickShowMap}
-          >
+        <Button
+          className="m-1"
+          variant="light"
+          color="dark"
+          compact
+          onClick={handleclickShowMap}
+        >
+          <BsPinMap />
+          <p className="hidden sm:inline">
             {mapSnap.show ? "地図を閉じる" : "地図表示"}
-          </Button>
+          </p>
+        </Button>
 
-          <Button
-            className="m-1"
-            variant="light"
-            color="dark"
-            compact
-            onClick={handleClickMapUpdate}
-          >
-            <GrUpdate color={"#ffffff"} />
-          </Button>
-        </div>
+        <Button
+          className="m-1"
+          variant="light"
+          color="dark"
+          compact
+          onClick={handleClickMapUpdate}
+        >
+          <GrUpdate color={"#ffffff"} />
+        </Button>
+      </div>
 
-        <div>
-          <Button
-            className="m-1"
-            variant="light"
-            color="dark"
-            compact
-            onClick={() => handleClickSave(events)}
-          >
-            保存する
-          </Button>
-        </div>
+      <div>
+        <Button
+          className="m-1"
+          variant="light"
+          color="dark"
+          compact
+          onClick={() => handleClickSave(events)}
+        >
+          保存する
+        </Button>
       </div>
     </div>
   );

@@ -3,8 +3,19 @@ import Head from "next/head";
 import Calendar from "src/components/Calendar";
 import { Header } from "src/components/Header";
 import { List } from "src/components/List";
+import { Tabs } from "@mantine/core";
+import { AiOutlineUnorderedList, AiOutlineCalendar } from "react-icons/ai";
+import { EventForm } from "src/components/EventFrom";
+import { IoAddSharp } from "react-icons/io5";
+import { ProgressList } from "src/components/ProgressList";
+import { MdOutlineDirectionsCarFilled } from "react-icons/md";
+import { listState } from "src/stores/valtioState";
+import { useSnapshot } from "valtio";
+import { PlanList } from "src/components/PlanList";
 
 const Home = () => {
+  // const listSnap = useSnapshot(listState);
+
   return (
     <div className="h-screen w-full bg-gray-200">
       <Head>
@@ -15,8 +26,53 @@ const Home = () => {
 
       <Header />
 
-      <div className="flex w-full h-[calc(100vh-44px)]">
+      <div className="w-full h-[calc(100vh-44px)] xs:hidden bg-white">
+        <Tabs
+          className="h-full"
+          classNames={{
+            root: "flex flex-col flex-col-reverse justify-between pt-2",
+            body: "h-full overflow-auto ",
+            tabInner: "flex-col ",
+            tabIcon: "text-xl ml-[10px]",
+            tabLabel: "text-xs",
+          }}
+          variant="pills"
+          position="center"
+          grow
+        >
+          <Tabs.Tab
+            label="Calendar"
+            icon={<AiOutlineCalendar />}
+            // disabled={listSnap.editMode}
+          >
+            <Calendar />
+          </Tabs.Tab>
+
+          <Tabs.Tab label="List" icon={<AiOutlineUnorderedList />}>
+            <PlanList />
+          </Tabs.Tab>
+
+          <Tabs.Tab
+            label="Add"
+            icon={<IoAddSharp />}
+            // disabled={listSnap.editMode}
+          >
+            <EventForm />
+          </Tabs.Tab>
+
+          <Tabs.Tab
+            label="Progress"
+            icon={<MdOutlineDirectionsCarFilled />}
+            // disabled={listSnap.editMode}
+          >
+            <ProgressList />
+          </Tabs.Tab>
+        </Tabs>
+      </div>
+
+      <div className="hidden  xs:flex w-full h-[calc(100vh-44px)]">
         <Calendar />
+
         <List />
       </div>
     </div>

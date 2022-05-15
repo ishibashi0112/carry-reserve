@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from "react";
 import { CgAddR } from "react-icons/cg";
 import { useRouter } from "next/router";
-import SideBar from "src/components/SideBar";
+import { SideBar } from "src/components/SideBar";
 import { listState, sideBarState } from "src/stores/valtioState";
 import { Burger, Button, Drawer, Title } from "@mantine/core";
 import { AiOutlineCarryOut } from "react-icons/ai";
@@ -19,7 +19,7 @@ export const Header = () => {
 
   return (
     <header className="h-11 flex justify-between px-8 bg-white relative">
-      <Title className="my-auto" order={2}>
+      <Title className="my-auto text-[4vw] xs:text-lg " order={2}>
         <p className="flex items-center">
           <AiOutlineCarryOut />
           carry manager
@@ -29,22 +29,22 @@ export const Header = () => {
         {router.pathname === "/" ? (
           <div className="flex items-center">
             <Button
-              className="mr-12"
+              className="hidden xs:block  mr-1 md:mr-12"
               variant="subtle"
               compact
               onClick={handleClickProgress}
             >
               <MdOutlineDirectionsCarFilled />
-              進捗管理
+              <p className=" hidden sm:inline ">進捗管理</p>
             </Button>
             <Button
-              className="mr-12"
+              className="hidden xs:block  mr-1 md:mr-12"
               variant="subtle"
               compact
               onClick={sideBarState.clickEventForm}
             >
               <CgAddR />
-              予定追加
+              <p className=" hidden sm:inline ">予定追加</p>
             </Button>
 
             <Burger

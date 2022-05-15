@@ -27,8 +27,8 @@ export const PlanList = () => {
 
   if (isConfirm) {
     return (
-      <div className="w-full h-full bg-white rounded-md">
-        <div className={`${mapSnap.show ? "flex" : null}`}>
+      <div className="w-full h-full ">
+        <div>
           <Map />
           <RouteList />
         </div>
@@ -39,9 +39,9 @@ export const PlanList = () => {
 
   if (listSnap.editMode) {
     return (
-      <div className="w-full h-full rounded-md bg-white">
-        <div className="p-2">
-          <div className={`${mapSnap.show ? "flex" : null} `}>
+      <div className="w-full h-full xs:bg-white xs:rounded-md">
+        <div className="xs:p-2">
+          <div className={`${mapSnap.show ? "xs:flex" : null} `}>
             <Map />
             <RouteList />
           </div>
@@ -63,7 +63,7 @@ export const PlanList = () => {
   }
 
   return (
-    <div className="w-full h-full bg-white rounded-md">
+    <div className="w-full h-full ">
       <EventList />
     </div>
   );

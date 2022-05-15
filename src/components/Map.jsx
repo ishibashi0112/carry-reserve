@@ -15,7 +15,7 @@ const Map = () => {
   };
 
   return (
-    <div className={`${mapSnap.show ? "" : "hidden"} w-full`}>
+    <div className={`${mapSnap.show ? "p-2 xs:p-0 block" : "hidden"} w-full`}>
       <LoadScript
         googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
       >

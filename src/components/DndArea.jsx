@@ -76,12 +76,14 @@ export const DndArea = () => {
   const [scrolled, setScrolled] = useState(false);
 
   return (
-    <div className="mt-4">
+    <div className="mt-4 flex flex-col items-center ">
       <DragDropContext onDragEnd={handleOnDragEnd}>
         <Droppable droppableId="dropEvents">
           {(provided, snapshot) => (
             <ScrollArea
+              className="w-11/12"
               style={{ height: 220 }}
+              offsetScrollbars
               onScrollPositionChange={({ y }) => setScrolled(y !== 0)}
             >
               <Table
@@ -98,8 +100,8 @@ export const DndArea = () => {
                   <tr>
                     <th></th>
                     <th>行き先</th>
-                    <th>時間帯</th>
-                    <th>品目情報</th>
+                    <th>時間</th>
+                    <th>品目</th>
                     <th>備考</th>
                     <th>予約者</th>
                     <th></th>
@@ -118,7 +120,7 @@ export const DndArea = () => {
                           <tr
                             className={`${
                               snapshot.isDragging
-                                ? "bg-white shadow-md border rounded-sm"
+                                ? "bg-white shadow-md rounded-sm flex justify-between"
                                 : ""
                             }`}
                             key={event.id}
@@ -126,7 +128,7 @@ export const DndArea = () => {
                             {...provided.draggableProps}
                             {...provided.dragHandleProps}
                           >
-                            <td>
+                            <td className="max-w-[64px]">
                               <Button
                                 variant="subtle"
                                 color="dark"
@@ -136,11 +138,19 @@ export const DndArea = () => {
                                 <AiOutlineBars />
                               </Button>
                             </td>
-                            <td> {event.destination}</td>
-                            <td>{event.time_zone}</td>
-                            <td>{event.items}</td>
-                            <td>{event.description ? "あり" : "なし"}</td>
-                            <td>
+                            <td className="max-w-[200px] truncate">
+                              {event.destination}
+                            </td>
+                            <td className="max-w-[80px]  truncate">
+                              {event.time_zone}
+                            </td>
+                            <td className="max-w-[200px] truncate ">
+                              {event.items}
+                            </td>
+                            <td className="max-w-[80px]  truncate">
+                              {event.description ? "あり" : "なし"}
+                            </td>
+                            <td className="max-w-[100px]">
                               <Badge
                                 className="pl-0 w-20"
                                 classNames={{
@@ -161,7 +171,7 @@ export const DndArea = () => {
                                 {event.user_name}
                               </Badge>
                             </td>
-                            <td>
+                            <td className="max-w-[64px]">
                               <Button
                                 variant="subtle"
                                 color="dark"

@@ -89,6 +89,7 @@ export const ProgressForm = () => {
       <Stepper
         active={active}
         // onStepClick={setActive}
+        breakpoint="xs"
       >
         <Stepper.Step
           label="自社"

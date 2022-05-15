@@ -2,7 +2,7 @@ import React, { useCallback } from "react";
 
 import { useSnapshot } from "valtio";
 import { eventsState, mapState } from "src/stores/valtioState";
-import { Badge, Stepper, Textarea, Timeline } from "@mantine/core";
+import { Badge, ScrollArea, Stepper, Textarea, Timeline } from "@mantine/core";
 import { useProgresses } from "src/hooks/useProgresses";
 import dayjs from "dayjs";
 
@@ -57,7 +57,6 @@ export const RouteList = () => {
     },
     []
   );
-  console.log(eventsState.dateEvents);
 
   const { data: progresses, error, isLoading } = useProgresses();
   const sortedProgresses = progresses
@@ -94,7 +93,7 @@ export const RouteList = () => {
 
   if (isConfirm) {
     return (
-      <div className=" p-4">
+      <div className=" p-4 ">
         <Stepper active={active}>
           <Stepper.Step
             label="自社"
@@ -164,54 +163,56 @@ export const RouteList = () => {
     );
   }
 
-  return (
-    <div>
-      {mapSnap.show ? (
-        <div className="flex flex-col items-center h-[350px] w-[200px] pt-2 mx-auto overflow-scroll">
-          <Timeline lineWidth={2} bulletSize={16}>
-            <Timeline.Item
-              title={
-                <Badge size="lg" color="dark" radius="sm">
-                  自社
-                </Badge>
-              }
-            >
-              <p className="text-sm">{"発 : 8:00"}</p>
-            </Timeline.Item>
+  if (mapSnap.show) {
+    return (
+      <div className="flex flex-col  h-[350px] w-[200px] p-2 mx-auto overflow-scroll">
+        <Timeline lineWidth={2} bulletSize={16}>
+          <Timeline.Item
+            title={
+              <Badge size="lg" color="dark" radius="sm">
+                自社
+              </Badge>
+            }
+          >
+            <p className="text-sm">{"発 : 8:00"}</p>
+          </Timeline.Item>
 
-            {convertedDirectionResult.map((direction, i) => {
-              return (
-                <Timeline.Item
-                  key={i}
-                  title={
-                    <Badge
-                      classNames={{ root: "px-1" }}
-                      size="lg"
-                      color="dark"
-                      radius="xs"
-                    >
-                      {direction?.events
-                        ? direction.events.destination
-                        : "自社"}
-                    </Badge>
-                  }
-                >
-                  <div className="text-sm">
-                    <p>{direction.arrival}</p>
-                    <div className="ml-1 mb-1 text-xs text-gray-500">
-                      <p>{direction.distance}</p>
-                      <p>{direction.duration}</p>
-                    </div>
-
-                    <p>{direction.departure}</p>
+          {convertedDirectionResult.map((direction, i) => {
+            return (
+              <Timeline.Item
+                key={i}
+                title={
+                  <Badge
+                    classNames={{ root: "px-1" }}
+                    size="lg"
+                    color="dark"
+                    radius="xs"
+                  >
+                    {direction?.events ? direction.events.destination : "自社"}
+                  </Badge>
+                }
+              >
+                <div className="text-sm">
+                  <p>{direction.arrival}</p>
+                  <div className="ml-1 mb-1 text-xs text-gray-500">
+                    <p>{direction.distance}</p>
+                    <p>{direction.duration}</p>
                   </div>
-                </Timeline.Item>
-              );
-            })}
-          </Timeline>
-        </div>
-      ) : (
-        <div className=" flex overflow-x-scroll p-3 mx-auto border rounded-md shadow-sm">
+
+                  <p>{direction.departure}</p>
+                </div>
+              </Timeline.Item>
+            );
+          })}
+        </Timeline>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex justify-center">
+      <ScrollArea className="w-11/12 max-w-lg" style={{ height: 90 }}>
+        <div className="flex">
           <div className="w-28 min-w-[112px] text-center mr-2">
             <Badge size="lg" color="dark" radius="sm">
               自社
@@ -229,7 +230,10 @@ export const RouteList = () => {
                 </div>
                 <div className="w-28 min-w-[112px] text-center mr-2">
                   <Badge
-                    classNames={{ root: "px-1" }}
+                    classNames={{
+                      root: "px-1 ",
+                      inner: "max-w-[100px] truncate",
+                    }}
                     size="lg"
                     color="dark"
                     radius="xs"
@@ -244,7 +248,7 @@ export const RouteList = () => {
             );
           })}
         </div>
-      )}
+      </ScrollArea>
     </div>
   );
 };

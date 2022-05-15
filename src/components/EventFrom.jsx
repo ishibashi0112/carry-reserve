@@ -6,7 +6,6 @@ import { IoCloseOutline } from "react-icons/io5";
 import { BiSearchAlt2 } from "react-icons/bi";
 import { useHistorySearch } from "src/hooks/useHistorySearch";
 import { newEvent } from "src/firebase/firestore";
-import { promiseToast } from "src/hooks/useCustomToast";
 import { useForm } from "@mantine/form";
 import {
   Button,
@@ -22,6 +21,7 @@ import { showNotification } from "@mantine/notifications";
 export const EventForm = () => {
   const { text, search, setText, handleOnChange } = useHistorySearch();
   const [isModalOpend, setIsModalOpend] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm({
     initialValues: {
@@ -48,13 +48,24 @@ export const EventForm = () => {
     },
   });
 
-  const handleClickHistory = useCallback((event) => {
-    const { id, ...eventData } = event;
+  const handleClickHistory = useCallback(
+    (event) => {
+      const addEventkeys = {
+        ...event,
+        date: "",
+        time_zone: "",
+        key_person: "",
+        items: "",
+        description: "",
+      };
+      const { id, ...eventData } = addEventkeys;
 
-    form.setValues(eventData);
-    setText("");
-    setIsModalOpend(false);
-  }, []);
+      form.setValues(eventData);
+      setText("");
+      setIsModalOpend(false);
+    },
+    [form]
+  );
 
   const onSubmit = useCallback(async (values) => {
     setIsLoading(true);
@@ -76,79 +87,78 @@ export const EventForm = () => {
     });
   }, []);
 
-  const [isLoading, setIsLoading] = useState(false);
-
   return (
     <div>
-      <div className="flex justify-end p-1 h-4">
-        <Button
-          color="dark"
-          variant="subtle"
-          radius="xl"
-          compact
-          onClick={sideBarState.clickEventForm}
-        >
-          <IoCloseOutline />
-        </Button>
-      </div>
-
-      <div>
-        <p className="flex justify-center">
+      <ScrollArea style={{ height: 400 }}>
+        <div className="flex justify-end p-1 h-4">
           <Button
-            variant="outline"
+            className="hidden xs:block"
+            color="dark"
+            variant="subtle"
+            radius="xl"
             compact
-            leftIcon={<BiSearchAlt2 />}
-            onClick={() => setIsModalOpend(true)}
+            onClick={sideBarState.clickEventForm}
           >
-            履歴検索
+            <IoCloseOutline />
           </Button>
-        </p>
+        </div>
 
-        <Modal
-          classNames={{
-            root: "your-root-class",
-            inner: "your-inner-class",
-            modal: "p-0 h-96",
-            header: "your-header-class",
-            overlay: "your-overlay-class",
-            title: "your-title-class",
-            body: "your-body-class",
-            close: "your-close-class",
-          }}
-          withCloseButton={false}
-          opened={isModalOpend}
-          onClose={() => setIsModalOpend(false)}
-        >
-          <TextInput
-            variant="unstyled"
-            placeholder="履歴より検索"
-            icon={<BiSearchAlt2 />}
-            value={text}
-            onChange={handleOnChange}
-          />
+        <div>
+          <p className="flex justify-center">
+            <Button
+              variant="outline"
+              compact
+              leftIcon={<BiSearchAlt2 />}
+              onClick={() => setIsModalOpend(true)}
+            >
+              履歴検索
+            </Button>
+          </p>
 
-          <ScrollArea className="border-t p-1" style={{ height: 330 }}>
-            {search
-              ? search.map((event) => (
-                  <div
-                    className="rounded-sm transition hover:transition hover:bg-gray-200 "
-                    key={event.id}
-                  >
+          <Modal
+            classNames={{
+              root: "your-root-class",
+              inner: "your-inner-class",
+              modal: "p-0 h-96",
+              header: "your-header-class",
+              overlay: "your-overlay-class",
+              title: "your-title-class",
+              body: "your-body-class",
+              close: "your-close-class",
+            }}
+            withCloseButton={false}
+            opened={isModalOpend}
+            onClose={() => setIsModalOpend(false)}
+          >
+            <TextInput
+              variant="unstyled"
+              placeholder="履歴より検索"
+              icon={<BiSearchAlt2 />}
+              value={text}
+              onChange={handleOnChange}
+            />
+
+            <ScrollArea className="border-t p-1" style={{ height: 330 }}>
+              {search
+                ? search.map((event) => (
                     <div
-                      className="truncate"
-                      onClick={() => handleClickHistory(event)}
-                      aria-hidden={true}
+                      className="rounded-sm transition hover:transition hover:bg-gray-200 "
+                      key={event.id}
                     >
-                      {event.destination}
+                      <div
+                        className="truncate"
+                        onClick={() => handleClickHistory(event)}
+                        aria-hidden={true}
+                      >
+                        {event.destination}
+                      </div>
                     </div>
-                  </div>
-                ))
-              : null}
-          </ScrollArea>
-        </Modal>
-      </div>
+                  ))
+                : null}
+            </ScrollArea>
+          </Modal>
+        </div>
 
-      <ScrollArea style={{ height: 600 }}>
         <form
           className="p-5 mt-1 flex flex-col gap-2  "
           onSubmit={form.onSubmit(onSubmit)}

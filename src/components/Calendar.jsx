@@ -79,21 +79,8 @@ const Calendar = () => {
     (e) => {
       const selectEvent = {
         id: e.event.id,
-        destination: e.event.extendedProps.destination,
         date: e.event.startStr,
-        time_zone: e.event.extendedProps.time_zone,
-        zipcode: e.event.extendedProps.zipcode,
-        address1: e.event.extendedProps.address1,
-        address2: e.event.extendedProps.address2,
-        phone_number: e.event.extendedProps.phone_number,
-        key_person: e.event.extendedProps.key_person,
-        phone_number: e.event.extendedProps.phone_number,
-        items: e.event.extendedProps.items,
-        description: e.event.extendedProps.description,
-        isConfirm: e.event.extendedProps.isConfirm,
-        isDone: e.event.extendedProps.isDone,
-        route_order: e.event.extendedProps.route_order,
-        user_id: e.event.extendedProps.user_id,
+        ...e.event.extendedProps,
       };
 
       eventsState.selectEvent = selectEvent;
@@ -106,27 +93,15 @@ const Calendar = () => {
     try {
       const res = await getDocs(collection(db, "events"));
       const resArray = res.docs;
-      const AllEvent = resArray.map((doc) => ({
-        id: doc.id,
-        title: doc.data().destination,
-        date: doc.data().date,
-        extendedProps: {
-          destination: doc.data().destination,
-          time_zone: doc.data().time_zone,
-          zipcode: doc.data().zipcode,
-          address1: doc.data().address1,
-          address2: doc.data().address2,
-          phone_number: doc.data().phone_number,
-          key_person: doc.data().key_person,
-          phone_number: doc.data().phone_number,
-          items: doc.data().items,
-          description: doc.data().description,
-          isConfirm: doc.data().isConfirm,
-          isDone: doc.data().isDone,
-          route_order: doc.data().route_order,
-          user_id: doc.data().user_id,
-        },
-      }));
+      const AllEvent = resArray.map((doc) => {
+        const extendedProps = doc.data();
+        return {
+          id: doc.id,
+          title: doc.data().destination,
+          date: doc.data().date,
+          extendedProps,
+        };
+      });
       eventsState.events = AllEvent;
     } catch (error) {
       console.log(error);
@@ -137,7 +112,7 @@ const Calendar = () => {
     const res = collection(db, "events");
     onSnapshot(res, async (querySnapshot) => {
       const resArray = querySnapshot.docs;
-      const AllEvent = await resArray.map((doc) => ({
+      const AllEvent = resArray.map((doc) => ({
         id: doc.id,
         title: doc.data().destination,
         date: doc.data().date,
@@ -168,34 +143,27 @@ const Calendar = () => {
   }, []);
 
   return (
-    <div className="w-[700px] resize-x overflow-scroll  h-[650px] p-6 my-2 mx-4 shadow-md  rounded-md bg-white ">
-      <div className="w-[700px] h-[600px] ">
-        <FullCalendar
-          height={"100%"}
-          plugins={[
-            timeGridPlugin,
-            dayGridPlugin,
-            interactionPlugin,
-            listPlugin,
-          ]}
-          initialView="dayGridMonth"
-          selectable={true}
-          unselectAuto={false}
-          weekends={false}
-          dayMaxEvents={true}
-          headerToolbar={{
-            left: "dayGridMonth,timeGridDay,listMonth",
-            center: "title",
-            right: "prev,next",
-          }}
-          slotMinTime={"07:00:00"}
-          slotMaxTime={"21:00:00"}
-          locale={"ja"}
-          events={eventsSnap.events}
-          dateClick={handleClickDate}
-          eventClick={handleClickEvent}
-        />
-      </div>
+    <div className="bg-white text-xs p-2 xs:resize-x xs:overflow-auto xs:h-[650px] xs:m-2 xs:rounded-md xs:shadow-md">
+      <FullCalendar
+        viewClassNames={"xs:min-w-[440px]"}
+        height={600}
+        plugins={[timeGridPlugin, dayGridPlugin, interactionPlugin, listPlugin]}
+        initialView="dayGridMonth"
+        selectable={true}
+        unselectAuto={false}
+        // weekends={false}
+        dayMaxEvents={true}
+        headerToolbar={{
+          left: "dayGridMonth,listMonth",
+          center: "title",
+          right: "prev,next",
+        }}
+        // locale={"ja"}
+        // dayHeaderFormat={"en"}
+        events={eventsSnap.events}
+        dateClick={handleClickDate}
+        eventClick={handleClickEvent}
+      />
     </div>
   );
 };

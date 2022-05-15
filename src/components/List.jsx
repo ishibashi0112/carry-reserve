@@ -10,7 +10,7 @@ export const List = () => {
   const ListSnap = useSnapshot(listState);
 
   return (
-    <div className="flex-1 h-[650px] mr-2 my-2 rounded-md shadow-md z-10 bg-white ">
+    <div className="flex-1 max-w-[800px] h-[650px] my-2 mr-2  rounded-md shadow-md bg-white xs:z-10">
       {sideBarSnap.isEventFormOpened ? (
         <EventForm />
       ) : ListSnap.isProgressOpened ? (

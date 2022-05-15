@@ -71,7 +71,6 @@ export const getUserEvents = async (userId) => {
 };
 
 export const deleteEvent = async (eventId) => {
-  console.log(eventId);
   const eventDoc = doc(db, "events", eventId);
   try {
     await deleteDoc(eventDoc);
